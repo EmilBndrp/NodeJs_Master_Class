@@ -2,24 +2,23 @@
  * Base file
  */
 
- 
+
 /**
- * Dependencies and variables
+ * Dependencies
  */
 // NodeJs dependencies
 const url = require('url');
 const http = require('http');
 
 // Local dependencies
+const config = require('./config');
 const router = require('./handlers');
-
-// Variables
-let port = 80;
 
 
 /**
  * Function decleration
  */
+//Create the server object
 const server = http.createServer((req, res) => {
 
     // Getting the path
@@ -67,7 +66,6 @@ const server = http.createServer((req, res) => {
 /**
  * Function invocation
  */
-server.listen(port,() => {
-    console.log('The server is open on port '+ port);
-    
+server.listen(config.httpPort, () => {
+    console.log('The server is open on port '+ config.httpPort);
 });

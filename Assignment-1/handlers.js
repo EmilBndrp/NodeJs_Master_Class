@@ -11,7 +11,7 @@ handlers.ping = function(callback) {
 // hello handler
 handlers.hello = function(callback) {
     // Callback a HTTP status code and a payload object
-    callback(200, {'name': 'samplehandler'});
+    callback(200, {'hello': 'World!'});
 };
 
 // Not found handler

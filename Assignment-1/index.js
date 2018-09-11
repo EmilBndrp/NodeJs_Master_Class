@@ -21,7 +21,7 @@ const router = require('./handlers');
 //Create the server object
 const server = http.createServer((req, res) => {
 
-    // Getting the path
+    // Getting the path and trim of any '/' at the start and end.
     const parsedUrl = url.parse(req.url, true);
     const path = parsedUrl.pathname;
     const trimmedPath = path.replace(/^\/+|\/+$/g, '');
@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
 
 
     // Setting up appropriate handler
-    let chosenHandler = typeof(router[trimmedPath]) !== 'undefined' ?
+    const chosenHandler = typeof(router[trimmedPath]) !== 'undefined' ?
     router[trimmedPath] : router['notFound'];
 
     chosenHandler((statusCode, payload) => {
@@ -45,7 +45,7 @@ const server = http.createServer((req, res) => {
         payload : {};
 
         // Stringify payload
-        let payloadString = JSON.stringify(payload);
+        const payloadString = JSON.stringify(payload);
         
 
         // Assign the content type to JSON object
@@ -62,6 +62,7 @@ const server = http.createServer((req, res) => {
                     );
     });
 });
+
 
 /**
  * Function invocation

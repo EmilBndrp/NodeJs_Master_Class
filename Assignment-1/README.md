@@ -8,4 +8,4 @@ Please create a simple "Hello World" API. Meaning:
 # Directions
 
 1. Open the server by running `node index.js`
-2. Using [Postman](https://www.getpostman.com/apps) or a browser, make a request to: http://127.0.0.1/hello
+2. Using [Postman](https://www.getpostman.com/apps) or a browser, make a request to: http://127.0.0.1:3000/hello

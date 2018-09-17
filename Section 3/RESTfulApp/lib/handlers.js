@@ -173,7 +173,31 @@ handlers._users.put = function(data, callback) {
 };
 
 // Users - delete
+// Required field: phone
+// Only let an authenticated user delete
 handlers._users.delete = function(data, callback) {
+    // Check that the phonenumber provided is valid
+    const phone = typeof(data.queryStringObject.phone) == 'string' &&
+        data.queryStringObject.phone.trim().length == 10 ?
+        data.queryStringObject.phone.trim() : false;
+    
+    if (phone) {
+        _data.read('users', phone, (err, data) => {
+            if (!err && data) {
+                _data.delete('users', phone, (err) => {
+                    if(!err) {
+                        callback(200);
+                    } else {
+                        callback(500, { 'Error': 'Could not delete the specified user'});
+                    }
+                });
+            } else {
+                callback(400, { 'Error': 'Could not find the specified user'});
+            }
+        });
+    } else {
+        callback(400, { 'error': 'missing required field (phone Nr)'});
+    }
 
 };
 

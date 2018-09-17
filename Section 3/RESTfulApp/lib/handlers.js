@@ -11,8 +11,8 @@ let handlers = {};
 
 // Users handle
 handlers.users = function(data, callback) {
-    let acceptapleMethods = ['post', 'get', 'put', 'delete']
-    if(acceptapleMethods.indexOf(data.method) > -1) {
+    let acceptableMethods = ['post', 'get', 'put', 'delete']
+    if(acceptableMethods.indexOf(data.method) > -1) {
         handlers._users[data.method](data, callback);
     } else {
         callback(405)

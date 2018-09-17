@@ -89,8 +89,28 @@ handlers._users.post = function(data, callback) {
 };
 
 // Users - get
+//require data: phone
+//optional data: none
+//only let an authorized user access their object, dont let them access anyone elses
 handlers._users.get = function(data, callback) {
-
+    // Check that the phonenumber provided is valid
+    const phone = typeof(data.queryStringObject.phone) == 'string' &&
+        data.queryStringObject.phone.trim().length == 10 ?
+        data.queryStringObject.phone.trim() : false;
+    
+    if (phone) {
+        _data.read('users', phone, (err, data) => {
+            if (!err && data) {
+                // Remove the hashed password from the user object before returning it to the requirester
+                delete data.hashedPassword;
+                callback(200, data);
+            } else {
+                callback(404)
+            }
+        });
+    } else {
+        callback(400, { 'error': 'missing required field (phone Nr)'});
+    }
 };
 
 // Users - put

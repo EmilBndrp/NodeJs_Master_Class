@@ -100,13 +100,11 @@ const unifiedServer = function (req, res) {
         chosenHandler(data, (statusCode, payload) => {
             // Use the statuscode defined by the handler or default to 200
             statusCode = typeof (statusCode) === 'number' ?
-                statusCode :
-                200;
+                statusCode : 200;
 
             // Use the payload called by the handler or default to an empty object
             payload = typeof (payload) === 'object' ?
-                payload :
-                {};
+                payload : {};
 
             // Convert to a string
             const payloadString = JSON.stringify(payload);

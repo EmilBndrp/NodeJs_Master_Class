@@ -1,9 +1,12 @@
 /**
  * Library for storing and editing data
  * utilizing promises
+ * 
+ * TODO:
+ *  - configure functions to work with a callback
  */
 
-
+ 
 // Dependencies
 const fs = require('fs');
 const path = require('path');

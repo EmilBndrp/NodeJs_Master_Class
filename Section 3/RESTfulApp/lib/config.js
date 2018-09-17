@@ -2,7 +2,14 @@
  * Create and exprot configuration variables
  */
 
- // Container for all the envirenments
+ //#region Container for all the envirenments
+/**
+ * environment variables can set certain varaibles in the application
+ * based on a specified runtime environment
+ * 
+ * it is important to set one envorinment to default
+ */
+ //#endregion
  var environments = {};
 
  // Staging (default) environment

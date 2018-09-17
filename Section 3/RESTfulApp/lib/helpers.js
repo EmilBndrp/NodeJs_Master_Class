@@ -10,7 +10,7 @@ const config = require('./config');
 const helpers = {};
 
 // Create a SHA256 hash from string
-helpers.hash = function(str){
+helpers.hash = function(str) {
     if(typeof(str) == 'string' && str.length > 0) {
         const hash = crypto.createHmac('sha256', config.hashingSecret).update(str).digest('hex');
         return hash;
@@ -24,7 +24,7 @@ helpers.parseJsonToObject = function(str) {
     try {
         const obj = JSON.parse(str);
         return obj;
-    } catch {
+    } catch(err) {
         return {};
     }
 }

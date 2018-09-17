@@ -136,9 +136,7 @@ handlers._users.put = function(data, callback) {
 
     //Error if the phone is invalid
     if (phone) {
-
-    } else {
-        callback(400, { 'Error': 'Missing required field (phone Nr. is invalid)'})
+        //Error if nothing is sent to update
         if ( firstName || lastName || password ) {
             _data.read('users', phone, (err, userData) => {
                 if (!err && userData) {
@@ -169,6 +167,8 @@ handlers._users.put = function(data, callback) {
         } else {
             callback(400, { 'Error': 'Missing fields to update'});
         }
+    } else {
+        callback(400, { 'Error': 'Missing required field (phone Nr. is invalid)'});
     }
 };
 

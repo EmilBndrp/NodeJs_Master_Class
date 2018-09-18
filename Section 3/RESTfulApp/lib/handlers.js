@@ -1,21 +1,22 @@
 /**
- * request handlers
+ * Request handlers
  */
 
-//Dependencies
-const _data = require('./data');
-const helpers = require('./helpers');
+// Dependencies
+const _data = require( './data' );
+const helpers = require( './helpers' );
 
 // Define the handlers
-let handlers = {};
+const handlers = {};
 
 // Users handle
-handlers.users = function(data, callback) {
-    let acceptableMethods = ['post', 'get', 'put', 'delete']
-    if(acceptableMethods.indexOf(data.method) > -1) {
-        handlers._users[data.method](data, callback);
+handlers.users = function ( data, callback ) {
+    const acceptableMethods = ['post', 'get', 'put', 'delete'];
+
+    if ( acceptableMethods.indexOf( data.method ) > -1 ) {
+        handlers._users[data.method]( data, callback );
     } else {
-        callback(405)
+        callback( 405 );
     }
 };
 

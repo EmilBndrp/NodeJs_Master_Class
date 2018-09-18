@@ -5,11 +5,19 @@
 // Dependencies
 const _data = require( './data' );
 const helpers = require( './helpers' );
+const config = require( './config' );
 
 // Define the handlers
 const handlers = {};
+const stdPhoneLength = 10;
 
-// Users handle
+/**
+ * Users handle
+ * 
+ * @param {*} data test
+ * @param {*} callback test
+ * @returns {*} test
+ */
 handlers.users = function ( data, callback ) {
     const acceptableMethods = ['post', 'get', 'put', 'delete'];
 
@@ -17,8 +25,7 @@ handlers.users = function ( data, callback ) {
         return handlers._users[data.method]( data, callback );
     }
 
-    return callback( 405 );
-    
+    return callback( config.statusCode.methodNotAllowed );
 };
 
 // Container for the users submethods
@@ -47,7 +54,7 @@ handlers._users.post = function ( data, callback ) {
         false;
 
     const phone = typeof ( data.payload.phone ) === 'string' &&
-        data.payload.phone.trim().length === 10 ?
+        data.payload.phone.trim().length === stdPhoneLength ?
         data.payload.phone.trim() :
         false;
 
@@ -60,10 +67,10 @@ handlers._users.post = function ( data, callback ) {
         data.payload.tosAgreement === true ?
         true :
         false;
- 
+
     if ( firstName && lastName && phone && password && tosAgreement ) {
         // Make sure that the user doesn't already exist
-        _data.read( 'users', phone, ( err ) => {
+        return _data.read( 'users', phone, ( err ) => {
             if ( err ) {
                 // Hash the password
                 const hashedPassword = helpers.hash( password );
@@ -79,25 +86,24 @@ handlers._users.post = function ( data, callback ) {
                     };
 
                     // Store user on disc
-                    _data.create( 'users', phone, userObject, ( err ) => {
+                    return _data.create( 'users', phone, userObject, ( err ) => {
 
                         if ( !err ) {
-                            callback( 200 );
-                        } else {
-                            console.log( err );
-                            callback( 500, { 'Error': 'could not create the new user' });
+                            return callback( config.statusCode.ok );
                         }
+
+                        return callback( config.statusCode.internalServerError, { 'Error': 'could not create the new user' });
                     });
-                } else {
-                    callback( 500, { 'Error': 'Could not hash the user\'s password' });
                 }
-            } else {
-                callback( 400, { 'Error': 'A User with that phone number already exists' });
+
+                return callback( config.statusCode.internalServerError, { 'Error': 'Could not hash the user\'s password' });
             }
+
+            return callback( config.statusCode.badRequest, { 'Error': 'A User with that phone number already exists' });
         });
-    } else {
-        callback( 400, { 'Error': 'missing required fields' });
     }
+
+    return callback( config.statusCode.badRequest, { 'Error': 'missing required fields' });
 };
 
 
@@ -114,23 +120,24 @@ handlers._users.post = function ( data, callback ) {
 handlers._users.get = function ( data, callback ) {
     // Check that the phonenumber provided is valid
     const phone = typeof ( data.queryStringObject.phone ) === 'string' &&
-        data.queryStringObject.phone.trim().length === 10 ?
+        data.queryStringObject.phone.trim().length === stdPhoneLength ?
         data.queryStringObject.phone.trim() :
         false;
-    
+
     if ( phone ) {
-        _data.read( 'users', phone, ( err, data ) => {
+        return _data.read( 'users', phone, ( err, data ) => {
             if ( !err && data ) {
                 // Remove the hashed password from the user object before returning it to the requirester
                 delete data.hashedPassword;
-                callback( 200, data );
-            } else {
-                callback( 404 );
+
+                return callback( config.statusCode.ok, data );
             }
+
+            return callback( config.statusCode.notFound );
         });
-    } else {
-        callback( 400, { 'error': 'missing required field (phone Nr)' });
     }
+
+    return callback( config.statusCode.badRequest, { 'error': 'missing required field (phone Nr)' });
 };
 
 /**
@@ -143,7 +150,7 @@ handlers._users.get = function ( data, callback ) {
  * @returns {*} test
  */
 handlers._users.put = function ( data, callback ) {
-    
+
     const firstName = typeof ( data.payload.firstName ) === 'string' &&
         data.payload.firstName.trim().length > 0 ?
         data.payload.firstName.trim() :
@@ -155,7 +162,7 @@ handlers._users.put = function ( data, callback ) {
         false;
 
     const phone = typeof ( data.payload.phone ) === 'string' &&
-        data.payload.phone.trim().length === 10 ?
+        data.payload.phone.trim().length === stdPhoneLength ?
         data.payload.phone.trim() :
         false;
 
@@ -168,7 +175,7 @@ handlers._users.put = function ( data, callback ) {
     if ( phone ) {
         // Error if nothing is sent to update
         if ( firstName || lastName || password ) {
-            _data.read( 'users', phone, ( err, userData ) => {
+            return _data.read( 'users', phone, ( err, userData ) => {
                 if ( !err && userData ) {
                     // Update the fileds that are neccesary
                     if ( firstName ) {
@@ -182,24 +189,24 @@ handlers._users.put = function ( data, callback ) {
                     }
 
                     // Store the new updates
-                    _data.update( 'users', phone, userData, ( err ) => {
+                    return _data.update( 'users', phone, userData, ( err ) => {
                         if ( !err ) {
-                            callback( 200 );
-                        } else {
-                            callback( 500, { 'Error': 'Could not update the user' });
+                            return callback( config.statusCode.ok );
                         }
+
+                        return callback( config.statusCode.internalServerError, { 'Error': 'Could not update the user' });
                     });
-                } else {
-                    callback( 400, { 'Error': 'The specified user does not exist' });
                 }
+
+                return callback( config.statusCode.badRequest, { 'Error': 'The specified user does not exist' });
             });
 
-        } else {
-            callback( 400, { 'Error': 'Missing fields to update' });
         }
-    } else {
-        callback( 400, { 'Error': 'Missing required field (phone Nr. is invalid)' });
+
+        return callback( config.statusCode.badRequest, { 'Error': 'Missing fields to update' });
     }
+
+    return callback( config.statusCode.badRequest, { 'Error': 'Missing required field (phone Nr. is invalid)' });
 };
 
 /**
@@ -214,40 +221,39 @@ handlers._users.put = function ( data, callback ) {
 handlers._users.delete = function ( data, callback ) {
     // Check that the phonenumber provided is valid
     const phone = typeof ( data.queryStringObject.phone ) === 'string' &&
-        data.queryStringObject.phone.trim().length === 10 ?
+        data.queryStringObject.phone.trim().length === stdPhoneLength ?
         data.queryStringObject.phone.trim() :
         false;
-    
+
     if ( phone ) {
-        _data.read( 'users', phone, ( err, data ) => {
+        return _data.read( 'users', phone, ( err, data ) => {
             if ( !err && data ) {
-                _data.delete( 'users', phone, ( err ) => {
+                return _data.delete( 'users', phone, ( err ) => {
                     if ( !err ) {
-                        callback( 200 );
-                    } else {
-                        callback( 500, { 'Error': 'Could not delete the specified user' });
+                        return callback( config.statusCode.ok );
                     }
+
+                    return callback( config.statusCode.internalServerError, { 'Error': 'Could not delete the specified user' });
                 });
-            } else {
-                callback( 400, { 'Error': 'Could not find the specified user' });
             }
+
+            return callback( config.statusCode.badRequest, { 'Error': 'Could not find the specified user' });
         });
-    } else {
-        callback( 400, { 'error': 'missing required field (phone Nr)' });
     }
 
+    return callback( config.statusCode.badRequest, { 'error': 'missing required field (phone Nr)' });
 };
 
 
 // Ping handler
 handlers.ping = function ( data, callback ) {
-    callback( 200 );
+    callback( config.statusCode.ok );
 };
 
 
 // Not found handler
 handlers.notFound = function ( data, callback ) {
-    callback( 404 );
+    callback( config.statusCode.notFound );
 };
 
 module.exports = handlers;

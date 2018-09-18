@@ -17,9 +17,9 @@ helpers.hash = function ( str ) {
             .digest( 'hex' );
 
         return hash;
-    } else {
-        return false;
     }
+
+    return false;
 };
 
 // Parse a JSON string to an object in all cases, without throwing an error

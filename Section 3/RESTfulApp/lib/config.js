@@ -2,6 +2,13 @@
  * Create and exprot configuration variables
  */
 
+const statusCode = {
+    'badRequest': 400,
+    'internalServerError': 500,
+    'methodNotAllowed': 405,
+    'notFound': 404,
+    'ok': 200,
+};
 
 /**
  * Container for all the envirenments
@@ -18,6 +25,7 @@ environments.staging = {
     'hashingSecret': 'thisIsASecret',
     'httpPort': 3000,
     'httpsPort': 3001,
+    'statusCode': statusCode,
 };
 
 // Production environment
@@ -26,6 +34,7 @@ environments.production = {
     'hashingSecret': 'thisIsAlsoASecret',
     'httpPort': 5000,
     'httpsPort': 5001,
+    'statusCode': statusCode,
 };
 
 // Determine which environment was passed as a command-line argument

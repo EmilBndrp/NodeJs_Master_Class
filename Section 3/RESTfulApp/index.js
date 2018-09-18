@@ -101,7 +101,7 @@ const unifiedServer = function ( req, res ) {
             // Use the statuscode defined by the handler or default to 200
             statusCode = typeof ( statusCode ) === 'number' ?
                 statusCode :
-                200;
+                config.statusCode.ok;
 
             // Use the payload called by the handler or default to an empty object
             payload = typeof ( payload ) === 'object' ?

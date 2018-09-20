@@ -30,6 +30,7 @@ const helpers = require( './lib/helpers' );
 const router = {
     'ping': handlers.ping,
     'sample': handlers.sample,
+    'tokens': handlers.tokens,
     'users': handlers.users,
 };
 

@@ -3,11 +3,12 @@
  */
 
 const statusCode = {
-    'badRequest': 400,
-    'internalServerError': 500,
-    'methodNotAllowed': 405,
-    'notFound': 404,
     'ok': 200,
+    'badRequest': 400,
+    'forbidden': 403,
+    'notFound': 404,
+    'methodNotAllowed': 405,
+    'internalServerError': 500,
 };
 
 /**

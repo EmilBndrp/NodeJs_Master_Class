@@ -119,12 +119,12 @@ const unifiedServer = function ( req, res ) {
 
             // Log The requested data
             console.log(
-                `------------------- New Request ----------------------
-                - Request recieved on path: ${trimmedPath}
-                - with this method: ${method}
-                - with these query string parameters: ${JSON.stringify( queryStringObject )}
-                - Request recieved with these headers ${headers}
-                - Request recieved with this payload: ${buffer}`
+                `------------------- New Request ---------------------- \n` +
+                `- Request recieved on path: ${trimmedPath}\n` +
+                `- with this method: ${method}\n` +
+                `- with these query string parameters: ${JSON.stringify( queryStringObject )}\n` +
+                `- Request recieved with these headers ${JSON.stringify( headers )}\n` +
+                `- Request recieved with this payload: ${buffer}\n`
             );
         });
     });

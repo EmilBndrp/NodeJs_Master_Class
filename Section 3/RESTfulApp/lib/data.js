@@ -23,22 +23,22 @@ lib.create = function ( dir, file, data, callback ) {
             const stringData = JSON.stringify( data );
 
             // Write to file and closet it
-            fs.writeFile( fileDescriptor, stringData, ( err ) => {
+            return fs.writeFile( fileDescriptor, stringData, ( err ) => {
                 if ( !err ) {
-                    fs.close( fileDescriptor, ( err ) => {
+                    return fs.close( fileDescriptor, ( err ) => {
                         if ( !err ) {
-                            callback( false );
-                        } else {
-                            callback( 'Error closing new file' );
+                            return callback( false );
                         }
+
+                        return callback( 'Error closing new file' );
                     });
-                } else {
-                    callback( 'Error writing to new file' );
                 }
+                
+                return callback( 'Error writing to new file' );
             });
-        } else {
-            callback( 'Could not create new file, it may already exist' );
         }
+
+        return callback( 'Could not create new file, it may already exist' );
     });
 };
 
@@ -48,10 +48,10 @@ lib.read = function ( dir, file, callback ) {
         if ( !err && data ) {
             const parsedData = helpers.parseJsonToObject( data );
 
-            callback( false, parsedData );
-        } else {
-            callback( err, data );
+            return callback( false, parsedData );
         }
+
+        return callback( err, data );
     });
 };
 
@@ -64,29 +64,29 @@ lib.update = function ( dir, file, data, callback ) {
             const stringData = JSON.stringify( data );
 
             // Truncate the file
-            fs.truncate( fileDescriptor, ( err ) => {
+            return fs.truncate( fileDescriptor, ( err ) => {
                 if ( !err ) {
                     // Write to the file and close it
-                    fs.writeFile( fileDescriptor, stringData, ( err ) => {
+                    return fs.writeFile( fileDescriptor, stringData, ( err ) => {
                         if ( !err ) {
-                            fs.close( fileDescriptor, ( err ) => {
+                            return fs.close( fileDescriptor, ( err ) => {
                                 if ( !err ) {
-                                    callback( false );
-                                } else {
-                                    callback( 'Error closing file' );
+                                    return callback( false );
                                 }
+
+                                return callback( 'Error closing file' );
                             });
-                        } else {
-                            callback( 'Error writing to existing file' );
                         }
+
+                        return callback( 'Error writing to existing file' );
                     });
-                } else {
-                    callback( 'Error truncating file' );
                 }
+
+                return callback( 'Error truncating file' );
             });
-        } else {
-            callback( 'Could not open the file for updating, it may not exist yet' );
         }
+
+        return callback( 'Could not open the file for updating, it may not exist yet' );
     });
 };
 
@@ -95,10 +95,10 @@ lib.delete = function ( dir, file, callback ) {
     // Unlink the file
     fs.unlink( `${lib.baseDir}${dir}/${file}.json`, ( err ) => {
         if ( !err ) {
-            callback( false );
-        } else {
-            callback( 'Error deleting file' );
+            return callback( false );
         }
+
+        return callback( 'Error deleting file' );
     });
 };
 

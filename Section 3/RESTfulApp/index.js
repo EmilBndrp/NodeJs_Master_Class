@@ -117,12 +117,14 @@ const unifiedServer = function ( req, res ) {
             res.end( payloadString );
 
             // Log The requested data
-            console.log( '------------------- New Request ----------------------' );
-            console.log( `- Request recieved on path: ${trimmedPath}` );
-            console.log( `- with this method: ${method}` );
-            console.log( `- with these query string parameters: ${JSON.stringify( queryStringObject )}` );
-            console.log( `- Request recieved with these headers ${headers}` );
-            console.log( `- Request recieved with this payload: ${buffer}` );
+            console.log(
+                `------------------- New Request ----------------------
+                - Request recieved on path: ${trimmedPath}
+                - with this method: ${method}
+                - with these query string parameters: ${JSON.stringify( queryStringObject )}
+                - Request recieved with these headers ${headers}
+                - Request recieved with this payload: ${buffer}`
+            );
         });
     });
 };

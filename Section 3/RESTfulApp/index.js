@@ -15,16 +15,16 @@
  * The config dependency is a seperate module provided in this project
  * 
  */
-const fs = require('fs');
-const url = require('url');
-const http = require('http');
-const https = require('https');
-const {StringDecoder} = require('string_decoder');
+const fs = require( 'fs' );
+const url = require( 'url' );
+const http = require( 'http' );
+const https = require( 'https' );
+const { StringDecoder } = require( 'string_decoder' );
 
 // Local files
-const config = require('./lib/config');
-const handlers = require('./lib/handlers');
-const helpers = require('./lib/helpers');
+const config = require( './lib/config' );
+const handlers = require( './lib/handlers' );
+const helpers = require( './lib/helpers' );
 
 // Define a request router
 const router = {
@@ -53,14 +53,14 @@ const router = {
  * @param {http.ServerResponse} res  response
  * @returns {http.Server} server object
  */
-const unifiedServer = function (req, res) {
+const unifiedServer = function ( req, res ) {
 
     // Get the URL and parse it
-    const parsedUrl = url.parse(req.url, true);
+    const parsedUrl = url.parse( req.url, true );
 
     // Get the path and remove any '/' from the start and end of the string using regex
     const path = parsedUrl.pathname;
-    const trimmedPath = path.replace(/^\/+|\/+$/g, '');
+    const trimmedPath = path.replace( /^\/+|\/+$/g, '' );
 
     // Get the query string as an object
     const queryStringObject = parsedUrl.query;
@@ -72,14 +72,14 @@ const unifiedServer = function (req, res) {
     const headers = req.headers;
 
     // Get the payload, if any
-    const decoder = new StringDecoder('utf-8');
+    const decoder = new StringDecoder( 'utf-8' );
     let buffer = '';
 
-    req.on('data', (data) => {
-        buffer += decoder.write(data);
+    req.on( 'data', ( data ) => {
+        buffer += decoder.write( data );
     });
 
-    req.on('end', () => {
+    req.on( 'end', () => {
         buffer += decoder.end();
 
         // Choose handler this request should go to. If one is not found, use the 'not found handler'
@@ -91,53 +91,55 @@ const unifiedServer = function (req, res) {
         const data = {
             'headers': headers,
             'method': method,
-            'payload': helpers.parseJsonToObject(buffer),
+            'payload': helpers.parseJsonToObject( buffer ),
             'queryStringObject': queryStringObject,
             'trimmedPath': trimmedPath,
         };
 
         // Route the request to the handler specified in the router
-        chosenHandler(data, (statusCode, payload) => {
+        chosenHandler( data, ( statusCode, payload ) => {
             // Use the statuscode defined by the handler or default to 200
-            statusCode = typeof (statusCode) === 'number' ?
-                statusCode : 200;
+            statusCode = typeof ( statusCode ) === 'number' ?
+                statusCode :
+                config.statusCode.ok;
 
             // Use the payload called by the handler or default to an empty object
-            payload = typeof (payload) === 'object' ?
-                payload : {};
+            payload = typeof ( payload ) === 'object' ?
+                payload :
+                {};
 
             // Convert to a string
-            const payloadString = JSON.stringify(payload);
+            const payloadString = JSON.stringify( payload );
 
             // Return response
-            res.setHeader('Content-Type', 'application/json');
-            res.writeHead(statusCode);
-            res.end(payloadString);
+            res.setHeader( 'Content-Type', 'application/json' );
+            res.writeHead( statusCode );
+            res.end( payloadString );
 
             // Log The requested data
-            console.log('------------------- New Request ----------------------');
-            console.log(`- Request recieved on path: ${trimmedPath}`);
-            console.log(`- with this method: ${method}`);
-            console.log(`- with these query string parameters: ${JSON.stringify(queryStringObject)}`);
-            console.log(`- Request recieved with these headers ${headers}`);
-            console.log(`- Request recieved with this payload: ${buffer}`);
+            console.log( '------------------- New Request ----------------------' );
+            console.log( `- Request recieved on path: ${trimmedPath}` );
+            console.log( `- with this method: ${method}` );
+            console.log( `- with these query string parameters: ${JSON.stringify( queryStringObject )}` );
+            console.log( `- Request recieved with these headers ${headers}` );
+            console.log( `- Request recieved with this payload: ${buffer}` );
         });
     });
 };
 
 // Create the  http server object
-const httpServer = http.createServer((req, res) => {
-    unifiedServer(req, res);
+const httpServer = http.createServer(( req, res ) => {
+    unifiedServer( req, res );
 });
 
 // Create the  https server object
 const httpsServerOptions = {
-    'cert': fs.readFileSync('./https/cert.pem'),
-    'key': fs.readFileSync('./https/key.pem'),
+    'cert': fs.readFileSync( './https/cert.pem' ),
+    'key': fs.readFileSync( './https/key.pem' ),
 };
 
-const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
-    unifiedServer(req, res);
+const httpsServer = https.createServer( httpsServerOptions, ( req, res ) => {
+    unifiedServer( req, res );
 });
 
 
@@ -149,10 +151,10 @@ const httpsServer = https.createServer(httpsServerOptions, (req, res) => {
  *  The first var specifies wich port the server opens on (here it is port 3000)
  *  The second var is a callback function which will be assigned to the listening event
  */
-httpServer.listen(config.httpPort, () => {
-    console.log(`The http server is listening on port: ${config.httpPort} in ${config.envName} mode`);
+httpServer.listen( config.httpPort, () => {
+    console.log( `The http server is listening on port: ${config.httpPort} in ${config.envName} mode` );
 });
 
-httpsServer.listen(config.httpsPort, () => {
-    console.log(`The https server is listening on port ${config.httpsPort} in ${config.envName} mode`);
+httpsServer.listen( config.httpsPort, () => {
+    console.log( `The https server is listening on port ${config.httpsPort} in ${config.envName} mode` );
 });

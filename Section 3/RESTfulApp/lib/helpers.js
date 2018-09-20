@@ -1,32 +1,36 @@
 /**
- * helpers for various tasks
+ * Helpers for various tasks
  */
 
 // Dependencies
-const crypto = require('crypto');
-const config = require('./config');
+const crypto = require( 'crypto' );
+const config = require( './config' );
 
- // Container for all the helpers
+// Container for all the helpers
 const helpers = {};
 
 // Create a SHA256 hash from string
-helpers.hash = function(str) {
-    if(typeof(str) == 'string' && str.length > 0) {
-        const hash = crypto.createHmac('sha256', config.hashingSecret).update(str).digest('hex');
+helpers.hash = function ( str ) {
+    if ( typeof ( str ) === 'string' && str.length > 0 ) {
+        const hash = crypto.createHmac( 'sha256', config.hashingSecret )
+            .update( str )
+            .digest( 'hex' );
+
         return hash;
-    } else {
-        return false;
     }
-}
+
+    return false;
+};
 
 // Parse a JSON string to an object in all cases, without throwing an error
-helpers.parseJsonToObject = function(str) {
+helpers.parseJsonToObject = function ( str ) {
     try {
-        const obj = JSON.parse(str);
+        const obj = JSON.parse( str );
+
         return obj;
-    } catch(err) {
+    } catch ( err ) {
         return {};
     }
-}
+};
 
 module.exports = helpers;

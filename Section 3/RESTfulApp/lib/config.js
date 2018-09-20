@@ -2,38 +2,50 @@
  * Create and exprot configuration variables
  */
 
- //#region Container for all the envirenments
+const statusCode = {
+    'badRequest': 400,
+    'internalServerError': 500,
+    'methodNotAllowed': 405,
+    'notFound': 404,
+    'ok': 200,
+};
+
 /**
+ * Container for all the envirenments
  * environment variables can set certain varaibles in the application
  * based on a specified runtime environment
  * 
  * it is important to set one envorinment to default
  */
- //#endregion
- var environments = {};
+const environments = {};
 
- // Staging (default) environment
- environments.staging = {
-    'httpPort': 3000,
-    'httpsPort': 3001,
+// Staging (default) environment
+environments.staging = {
     'envName': 'staging',
     'hashingSecret': 'thisIsASecret',
- };
+    'httpPort': 3000,
+    'httpsPort': 3001,
+    'statusCode': statusCode,
+};
 
- // Production environment
- environments.production = {
+// Production environment
+environments.production = {
+    'envName': 'production',
+    'hashingSecret': 'thisIsAlsoASecret',
     'httpPort': 5000,
     'httpsPort': 5001,
-    'envName': 'production',
-    'hashingSecret': 'thisIsAlsoASecret'
- };
+    'statusCode': statusCode,
+};
 
-
- // Determine which environment was passed as a command-line argument
-var currentEnvironment = typeof(process.env.NODE_ENV) == 'string' ? process.env.NODE_ENV.toLowerCase() : '';
+// Determine which environment was passed as a command-line argument
+const currentEnvironment = typeof ( process.env.NODE_ENV ) === 'string' ?
+    process.env.NODE_ENV.toLowerCase() :
+    '';
 
 // Check that the current environment is one of the environments above, if no, default to staging
-var environmentToExport = typeof(environments[currentEnvironment]) == 'object' ? environments[currentEnvironment] : environments.staging;
+const environmentToExport = typeof ( environments[currentEnvironment] ) === 'object' ?
+    environments[currentEnvironment] :
+    environments.staging;
 
 // Export the module
 module.exports = environmentToExport;

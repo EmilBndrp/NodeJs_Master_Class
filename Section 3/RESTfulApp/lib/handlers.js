@@ -481,6 +481,112 @@ handlers.checks = function ( data, callback ) {
 // Container for all cheks methods
 handlers._checks = {};
 
+/**
+ * Cheks - post
+ * Required data: protocol, url, method, successCode, timeoutSeconds
+ * optional data: none
+ */
+handlers._checks.post = function ( data, callback ) {
+    const protocol = typeof ( data.payload.protocol ) === 'string' &&
+        ['http', 'https'].indexOf( data.payload.protocol ) > -1 ?
+        data.payload.protocol :
+        false;
+
+    const url = typeof ( data.payload.url ) === 'string' &&
+        data.payload.url.trim().length > 0 ?
+        data.payload.url.trim() :
+        false;
+
+    const method = typeof ( data.payload.protocol ) === 'string' &&
+        ['post', 'get', 'put', 'delete'].indexOf( data.payload.method ) > -1 ?
+        data.payload.method :
+        false;
+
+    const successCodes = typeof ( data.payload.successCodes ) === 'object' &&
+        data.payload.successCodes instanceof Array &&
+        data.payload.successCodes.length > 0 ?
+        data.payload.successCodes :
+        false;
+
+    const timeoutSeconds = typeof ( data.payload.timeoutSeconds ) === 'number' &&
+        // Check for whole number
+        data.payload.timeoutSeconds % 1 === 0 &&
+        data.payload.timeoutSeconds >= 1 &&
+        data.payload.timeoutSeconds <= 5 ?
+        data.payload.timeoutSeconds :
+        false;
+
+    if ( protocol && url && method && successCodes && timeoutSeconds ) {
+        // Get the tokens from the headers
+        const token = typeof ( data.headers.token ) === 'string' ?
+            data.headers.token :
+            false;
+
+        // Lookup the user by reading the token
+        return _data.read( 'tokens', token, ( err, tokenData ) => {
+            if ( !err && tokenData ) {
+                const userPhone = tokenData.phone;
+
+                // Lookup the user data
+                return _data.read( 'users', userPhone, ( err, userData ) => {
+                    if ( !err && userData ) {
+                        const userCheks = typeof ( userData.checks ) === 'object' &&
+                            userData.checks instanceof Array ?
+                            userData.checks :
+                            [];
+
+                        // Verify that the user has less than the max-checks-per-user
+                        if ( userCheks.length < config.maxChecks ) {
+                            // Create a random id for the check
+                            const checkIdLength = 20;
+                            const checkId = helpers.createRandomString( checkIdLength );
+
+                            // Create the check object, and include the user's phone
+                            const checkObject = {
+                                'id': checkId,
+                                'userPhone': userPhone,
+                                'protocol': protocol,
+                                'url': url,
+                                'method': method,
+                                'successCodes': successCodes,
+                                'timeoutSeconds': timeoutSeconds,
+                            };
+
+                            // Save the object
+                            return _data.create( 'checks', checkId, checkObject, ( err ) => {
+                                if ( !err ) {
+                                    // Add the checkId to the user's object
+                                    userData.checks = userCheks;
+                                    userData.checks.push( checkId );
+
+                                    // Save the new userdata
+                                    return _data.update( 'users', userPhone, userData, ( err ) => {
+                                        if ( !err ) {
+                                            // Return the data about the new check
+                                            return callback( config.statusCode.ok, checkObject );
+                                        }
+
+                                        return callback( config.statusCode.internalServerError, { 'Error': 'Could not update the user with the new check' });
+                                    });
+                                }
+
+                                return callback( config.internalServerError, { 'Error': 'Could not create the new check' });
+                            });
+                        }
+
+                        return callback( config.statusCode.badRequest, { 'Error': `The user already has the maximum number of checks (${config.maxChecks})` });
+                    }
+
+                    return callback( config.statusCode.forbidden );
+                });
+            }
+
+            return callback( config.statusCode.forbidden );
+        });
+    }
+
+    return callback( config.statusCode.badRequest, { 'Error': 'Missing required fields or inputs are invalid' });
+};
 
 // Ping handler
 handlers.ping = function ( data, callback ) {

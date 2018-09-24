@@ -121,7 +121,7 @@ handlers._users.get = function ( data, callback ) {
         const token = typeof ( data.headers.token ) === 'string' ?
             data.headers.token :
             false;
-        
+
         // Verify that the given token is valid for the phone number
         return handlers._tokens.verifyToken( token, phone, ( tokenIsValid ) => {
             if ( tokenIsValid ) {
@@ -129,10 +129,10 @@ handlers._users.get = function ( data, callback ) {
                     if ( !err && data ) {
                         // Remove the hashed password from the user object before returning it to the requirester
                         delete data.hashedPassword;
-        
+
                         return callback( config.statusCode.ok, data );
                     }
-        
+
                     return callback( config.statusCode.notFound );
                 });
             }
@@ -240,7 +240,7 @@ handlers._users.delete = function ( data, callback ) {
         const token = typeof ( data.headers.token ) === 'string' ?
             data.headers.token :
             false;
-        
+
         // Verify that the given token is valid for the phone number
         return handlers._tokens.verifyToken( token, phone, ( tokenIsValid ) => {
             if ( tokenIsValid ) {
@@ -349,7 +349,7 @@ handlers._tokens.get = function ( data, callback ) {
         data.queryStringObject.id.trim().length === tokenLength ?
         data.queryStringObject.id.trim() :
         false;
-    
+
     if ( id ) {
         return _data.read( 'tokens', id, ( err, tokenData ) => {
             if ( !err && tokenData ) {
@@ -462,6 +462,24 @@ handlers._tokens.verifyToken = function ( id, phone, callback ) {
         return callback( false );
     });
 };
+
+
+/**
+ * Checks handle
+ * 
+ */
+handlers.checks = function ( data, callback ) {
+    const acceptableMethods = ['post', 'get', 'put', 'delete'];
+
+    if ( acceptableMethods.indexOf( data.method ) > -1 ) {
+        return handlers._checks[data.method]( data, callback );
+    }
+
+    return callback( config.statusCode.methodNotAllowed );
+};
+
+// Container for all cheks methods
+handlers._checks = {};
 
 
 // Ping handler

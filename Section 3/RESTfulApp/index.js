@@ -49,10 +49,6 @@ const router = {
  *          All requests should end with calling the res.end method
  *              Else the client will keep waiting for more information
  * 
- * parameters:
- * @param {http.IncommingMessage} req request
- * @param {http.ServerResponse} res  response
- * @returns {http.Server} server object
  */
 const unifiedServer = function ( req, res ) {
 
@@ -119,7 +115,7 @@ const unifiedServer = function ( req, res ) {
 
             // Log The requested data
             console.log(
-                `------------------- New Request ---------------------- \n` +
+                '------------------- New Request ---------------------- \n' +
                 `- Request recieved on path: ${trimmedPath}\n` +
                 `- with this method: ${method}\n` +
                 `- with these query string parameters: ${JSON.stringify( queryStringObject )}\n` +

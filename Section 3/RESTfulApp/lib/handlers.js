@@ -14,10 +14,6 @@ const tokenLength = 20;
 
 /**
  * Users handle
- * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers.users = function ( data, callback ) {
     const acceptableMethods = ['post', 'get', 'put', 'delete'];
@@ -37,9 +33,6 @@ handlers._users = {};
  * Required data: firstName, lastName, phone, password, tosAgreement
  * Optional data: none
  * 
- * @param {*} data firstName, lastName, phone, password, tosAgreement
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._users.post = function ( data, callback ) {
 
@@ -114,9 +107,6 @@ handlers._users.post = function ( data, callback ) {
  * optional data: none
  * only let an authorized user access their object, dont let them access anyone elses
  * 
- * @param {*} data phone
- * @param {*} callback test
- * @return {*} test
  */
 handlers._users.get = function ( data, callback ) {
     // Check that the phonenumber provided is valid
@@ -159,9 +149,6 @@ handlers._users.get = function ( data, callback ) {
  * required data: phone
  * Optional data: firstname, lastname, password (at least one must be specified)
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._users.put = function ( data, callback ) {
 
@@ -240,9 +227,6 @@ handlers._users.put = function ( data, callback ) {
  * Required field: phone
  * Only let an authenticated user delete
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._users.delete = function ( data, callback ) {
     // Check that the phonenumber provided is valid
@@ -286,9 +270,6 @@ handlers._users.delete = function ( data, callback ) {
 /**
  * Users handle
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers.tokens = function ( data, callback ) {
     const acceptableMethods = ['post', 'get', 'put', 'delete'];
@@ -308,9 +289,6 @@ handlers._tokens = {};
  * Required data: phone, password
  * Optional data: none
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._tokens.post = function ( data, callback ) {
     const phone = typeof ( data.payload.phone ) === 'string' &&
@@ -365,9 +343,6 @@ handlers._tokens.post = function ( data, callback ) {
  * Required data: id
  * Optional data: none
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._tokens.get = function ( data, callback ) {
     const id = typeof ( data.queryStringObject.id ) === 'string' &&
@@ -393,9 +368,6 @@ handlers._tokens.get = function ( data, callback ) {
  * Required: id: extend
  * Optional data: none
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._tokens.put = function ( data, callback ) {
     const id = typeof ( data.payload.id ) === 'string' &&
@@ -444,9 +416,6 @@ handlers._tokens.put = function ( data, callback ) {
  * Required data: id
  * optional data: none
  * 
- * @param {*} data test
- * @param {*} callback test
- * @returns {*} test
  */
 handlers._tokens.delete = function ( data, callback ) {
     // Check that the id provided is valid
@@ -493,6 +462,7 @@ handlers._tokens.verifyToken = function ( id, phone, callback ) {
         return callback( false );
     });
 };
+
 
 // Ping handler
 handlers.ping = function ( data, callback ) {

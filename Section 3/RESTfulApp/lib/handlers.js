@@ -12,6 +12,8 @@ const handlers = {};
 const stdPhoneLength = 10;
 const tokenLength = 20;
 
+
+// Users
 /**
  * Users handle
  */
@@ -267,6 +269,7 @@ handlers._users.delete = function ( data, callback ) {
 };
 
 
+// Tokens
 /**
  * Users handle
  * 
@@ -410,7 +413,6 @@ handlers._tokens.put = function ( data, callback ) {
     return callback( config.statusCode.badRequest, { 'Error:': 'Missing required fields or fields are invalid' });
 };
 
-// Tokens - delete
 /**
  * Tokens - delete
  * Required data: id
@@ -443,7 +445,6 @@ handlers._tokens.delete = function ( data, callback ) {
     return callback( config.statusCode.badRequest, { 'error': 'missing required field (token id)' });
 };
 
-
 /**
  * Verify if a given token id is currently valid for a given user
  */
@@ -464,6 +465,7 @@ handlers._tokens.verifyToken = function ( id, phone, callback ) {
 };
 
 
+// Checks
 /**
  * Checks handle
  * 
@@ -587,6 +589,7 @@ handlers._checks.post = function ( data, callback ) {
 
     return callback( config.statusCode.badRequest, { 'Error': 'Missing required fields or inputs are invalid' });
 };
+
 
 // Ping handler
 handlers.ping = function ( data, callback ) {

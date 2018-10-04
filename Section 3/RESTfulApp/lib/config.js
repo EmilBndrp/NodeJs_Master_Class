@@ -2,6 +2,7 @@
  * Create and exprot configuration variables
  */
 
+const tokens = require( './tokens' );
 const statusCode = {
     'ok': 200,
     'badRequest': 400,
@@ -28,6 +29,8 @@ environments.staging = {
     'httpsPort': 3001,
     'statusCode': statusCode,
     'maxChecks': 5,
+    'stdPhoneLength': 8,
+    'twilio': tokens.twilio,
 };
 
 // Production environment
@@ -38,6 +41,8 @@ environments.production = {
     'httpsPort': 5001,
     'statusCode': statusCode,
     'maxChecks': 5,
+    'stdPhoneLength': 8,
+    'twilio': tokens.twilio,
 };
 
 // Determine which environment was passed as a command-line argument

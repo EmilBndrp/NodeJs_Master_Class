@@ -9,7 +9,6 @@ const config = require( './config' );
 
 // Define the handlers
 const handlers = {};
-const stdPhoneLength = 10;
 const tokenLength = 20;
 const checkIdLength = 20;
 
@@ -51,7 +50,7 @@ handlers._users.post = function ( data, callback ) {
         false;
 
     const phone = typeof ( data.payload.phone ) === 'string' &&
-        data.payload.phone.trim().length === stdPhoneLength ?
+        data.payload.phone.trim().length === config.stdPhoneLength ?
         data.payload.phone.trim() :
         false;
 
@@ -114,7 +113,7 @@ handlers._users.post = function ( data, callback ) {
 handlers._users.get = function ( data, callback ) {
     // Check that the phonenumber provided is valid
     const phone = typeof ( data.queryStringObject.phone ) === 'string' &&
-        data.queryStringObject.phone.trim().length === stdPhoneLength ?
+        data.queryStringObject.phone.trim().length === config.stdPhoneLength ?
         data.queryStringObject.phone.trim() :
         false;
 
@@ -166,7 +165,7 @@ handlers._users.put = function ( data, callback ) {
         false;
 
     const phone = typeof ( data.payload.phone ) === 'string' &&
-        data.payload.phone.trim().length === stdPhoneLength ?
+        data.payload.phone.trim().length === config.stdPhoneLength ?
         data.payload.phone.trim() :
         false;
 
@@ -234,7 +233,7 @@ handlers._users.put = function ( data, callback ) {
 handlers._users.delete = function ( data, callback ) {
     // Check that the phonenumber provided is valid
     const phone = typeof ( data.queryStringObject.phone ) === 'string' &&
-        data.queryStringObject.phone.trim().length === stdPhoneLength ?
+        data.queryStringObject.phone.trim().length === config.stdPhoneLength ?
         data.queryStringObject.phone.trim() :
         false;
 
@@ -327,7 +326,7 @@ handlers._tokens = {};
  */
 handlers._tokens.post = function ( data, callback ) {
     const phone = typeof ( data.payload.phone ) === 'string' &&
-        data.payload.phone.trim().length === stdPhoneLength ?
+        data.payload.phone.trim().length === config.stdPhoneLength ?
         data.payload.phone.trim() :
         false;
 

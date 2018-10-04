@@ -30,6 +30,7 @@ environments.staging = {
     'statusCode': statusCode,
     'maxChecks': 5,
     'stdPhoneLength': 8,
+    'checkIdLength': 20,
     'twilio': tokens.twilio,
 };
 
@@ -42,6 +43,7 @@ environments.production = {
     'statusCode': statusCode,
     'maxChecks': 5,
     'stdPhoneLength': 8,
+    'checkIdLength': 20,
     'twilio': tokens.twilio,
 };
 

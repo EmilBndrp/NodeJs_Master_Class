@@ -3,20 +3,20 @@
  */
 
 // Dependencies
-const crypto = require( 'crypto' );
-const config = require( './config' );
-const https = require( 'https' );
-const querystring = require( 'querystring' );
+const crypto = require('crypto');
+const config = require('./config');
+const https = require('https');
+const querystring = require('querystring');
 
 // Container for all the helpers
 const helpers = {};
 
 // Create a SHA256 hash from string
-helpers.hash = function ( str ) {
-    if ( typeof ( str ) === 'string' && str.length > 0 ) {
-        const hash = crypto.createHmac( 'sha256', config.hashingSecret )
-            .update( str )
-            .digest( 'hex' );
+helpers.hash = function (str) {
+    if (typeof (str) === 'string' && str.length > 0) {
+        const hash = crypto.createHmac('sha256', config.hashingSecret)
+            .update(str)
+            .digest('hex');
 
         return hash;
     }
@@ -25,31 +25,31 @@ helpers.hash = function ( str ) {
 };
 
 // Parse a JSON string to an object in all cases, without throwing an error
-helpers.parseJsonToObject = function ( str ) {
+helpers.parseJsonToObject = function (str) {
     try {
-        const obj = JSON.parse( str );
+        const obj = JSON.parse(str);
 
         return obj;
-    } catch ( err ) {
+    } catch (err) {
         return {};
     }
 };
 
-helpers.createRandomString = function ( strLength ) {
-    strLength = typeof ( strLength ) === 'number' && strLength > 0 ?
+helpers.createRandomString = function (strLength) {
+    strLength = typeof (strLength) === 'number' && strLength > 0 ?
         strLength :
         false;
 
-    if ( strLength ) {
+    if (strLength) {
         // Define all the possible characters that could go int a string
         const possibleCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
         // Start the final string
         let str = '';
 
-        for ( let i = 1; i <= strLength; i++ ) {
+        for (let i = 1; i <= strLength; i++) {
             // Get a random character from the possibleCharacters string
-            const randomCharacter = possibleCharacters.charAt( Math.floor( Math.random() * possibleCharacters.length ));
+            const randomCharacter = possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
 
             // Append this character to the final string
             str += randomCharacter;
@@ -61,22 +61,22 @@ helpers.createRandomString = function ( strLength ) {
     return false;
 };
 
-helpers.sendTwilioSms = function ( phone, msg, callback ) {
-    phone = typeof ( phone ) === 'string' &&
+helpers.sendTwilioSms = function (phone, msg, callback) {
+    phone = typeof (phone) === 'string' &&
         phone.trim().length === config.stdPhoneLength ?
         phone.trim() :
         false;
 
-    msg = typeof ( msg ) === 'string' &&
+    msg = typeof (msg) === 'string' &&
         msg.trim().length > 0 &&
         msg.trim().length <= 1600 ?
         msg.trim() :
         false;
 
-    console.log( phone, msg );
-    
+    console.log(phone, msg);
 
-    if ( phone && msg ) {
+
+    if (phone && msg) {
         // Configure the request payload
         const payload = {
             'From': config.twilio.fromPhone,
@@ -85,7 +85,7 @@ helpers.sendTwilioSms = function ( phone, msg, callback ) {
         };
 
         // Stringify payload and configure the request details
-        const stringPayload = querystring.stringify( payload );
+        const stringPayload = querystring.stringify(payload);
 
         // Configure the request details
         const requestDetails = {
@@ -96,33 +96,33 @@ helpers.sendTwilioSms = function ( phone, msg, callback ) {
             'auth': `${config.twilio.accountSid}:${config.twilio.authToken}`,
             'headers': {
                 'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': Buffer.byteLength( stringPayload ),
+                'Content-Length': Buffer.byteLength(stringPayload),
             },
         };
 
         // Instantiate request object
-        const req = https.request( requestDetails, ( res ) => {
+        const req = https.request(requestDetails, (res) => {
             // Grab the status of the sent request
             const status = res.statusCode;
 
             // Callback successfully if the request went through
-            if ( status === 200 || status === 201 ) {
-                return callback( false );
+            if (status === 200 || status === 201) {
+                return callback(false);
             }
 
-            return callback( `Status code returned was ${status}` );
+            return callback(`Status code returned was ${status}`);
         });
 
         // Bind the the error event so it doesnt get thrown
-        req.on( 'error', ( error ) => callback( error ));
+        req.on('error', (error) => callback(error));
 
         // Add the payload
-        req.write( stringPayload );
+        req.write(stringPayload);
 
         // End the request
         req.end();
     } else {
-        return callback( 'Given parameters were missing or invalid' );
+        return callback('Given parameters were missing or invalid');
     }
 };
 

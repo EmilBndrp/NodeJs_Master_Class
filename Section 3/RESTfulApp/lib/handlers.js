@@ -269,7 +269,6 @@ handlers._users.delete = function (data, callback) {
                                             if (err) {
                                                 deletionErrors = true;
                                             }
-                                            checksDeleted++;
                                             if (checksDeleted === checksToDelete) {
                                                 if (!deletionErrors) {
                                                     return callback(config.statusCode.ok);
@@ -277,6 +276,8 @@ handlers._users.delete = function (data, callback) {
 
                                                 return callback(config.statusCode.internalServerError, { 'Error': 'Errors encountered while attempting to delete all of the users checks. All checks may not have been delete from the system succesfully' });
                                             }
+
+                                            return checksDeleted++;
                                         });
                                     });
                                 }

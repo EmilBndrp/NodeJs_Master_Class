@@ -122,7 +122,7 @@ helpers.sendTwilioSms = function (phone, msg, callback) {
         // End the request
         req.end();
     } else {
-        return callback('Given parameters were missing or invalid');
+        callback('Given parameters were missing or invalid');
     }
 };
 

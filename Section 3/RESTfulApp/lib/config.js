@@ -2,7 +2,7 @@
  * Create and exprot configuration variables
  */
 
-const tokens = require( './tokens' );
+const tokens = require('./tokens');
 const statusCode = {
     'ok': 200,
     'badRequest': 400,

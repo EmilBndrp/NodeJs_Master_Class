@@ -9,7 +9,7 @@ const http = require('http');
 const path = require('path');
 const https = require('https');
 const _data = require('./data');
-const config = require('././config');
+const config = require('./config');
 const helpers = require('./helpers');
 
 // Instantiate the worker object

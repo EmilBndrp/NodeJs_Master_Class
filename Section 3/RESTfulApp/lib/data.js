@@ -10,6 +10,7 @@ const helpers = require('./helpers');
 // Container for the module (to be exported)
 const lib = {};
 
+// Base directory of the data folder
 lib.baseDir = path.join(__dirname, '/../.data/');
 
 // Write data to a file

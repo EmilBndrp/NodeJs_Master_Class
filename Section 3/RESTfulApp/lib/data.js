@@ -17,7 +17,6 @@ lib.baseDir = path.join(__dirname, '/../.data/');
 lib.create = function (dir, file, data, callback) {
     // Open the file for writing
     fs.open(`${lib.baseDir}${dir}/${file}.json`, 'wx', (err, fileDescriptor) => {
-        console.log(fileDescriptor);
 
         if (!err && fileDescriptor) {
             // Convert data to a string

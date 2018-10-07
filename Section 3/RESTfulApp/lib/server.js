@@ -20,6 +20,8 @@ const http = require('http');
 const https = require('https');
 const { StringDecoder } = require('string_decoder');
 const path = require('path');
+const util = require('util');
+const debug = util.debuglog('server');
 
 // Local files
 const config = require('./config');
@@ -118,15 +120,22 @@ server.unifiedServer = function (req, res) {
             res.writeHead(statusCode);
             res.end(payloadString);
 
-            // Log The requested data
-            console.log(
-                '------------------- New Request ---------------------- \n' +
+            /**
+             * Log The requested data
+             * If the response is 200, print green otherwise print red
+             */
+            const debugMessage = '------------------- New Request ---------------------- \n' +
+                `- with this method: ${method.toUpperCase()}\n` +
                 `- Request recieved on path: ${trimmedPath}\n` +
-                `- with this method: ${method}\n` +
                 `- with these query string parameters: ${JSON.stringify(queryStringObject)}\n` +
                 `- Request recieved with these headers ${JSON.stringify(headers)}\n` +
-                `- Request recieved with this payload: ${buffer}\n`
-            );
+                `- Request recieved with this payload: ${buffer}\n`;
+
+            if (statusCode === config.statusCode.ok) {
+                debug('\x1b[32m%s\x1b[0m', debugMessage);
+            } else {
+                debug('\x1b[31m%s\x1b[0m', debugMessage);
+            }
         });
     });
 };
@@ -160,12 +169,12 @@ server.init = function () {
      */
     // Start the http server
     server.httpServer.listen(config.httpPort, () => {
-        console.log(`The http server is listening on port: ${config.httpPort} in ${config.envName} mode`);
+        console.log('\x1b[36m%s\x1b[0m', `The http server is listening on port: ${config.httpPort} in ${config.envName} mode`);
     });
 
     // Start the https server
     server.httpsServer.listen(config.httpsPort, () => {
-        console.log(`The https server is listening on port ${config.httpsPort} in ${config.envName} mode`);
+        console.log('\x1b[35m%s\x1b[0m', `The https server is listening on port ${config.httpsPort} in ${config.envName} mode`);
     });
 };
 

@@ -14,7 +14,8 @@ Requirements of the API
 Environments
 - On mac: “NODE_ENV=production node index.js”
 - On Windows: “set NODE_ENV=production&& node index.js”
-- On Powershell: “$env:NODE_ENV=”production” node index.js”
+- On Powershell: “$env:NODE_ENV='production'; node index.js”
+    - $env:NODE_DEBUG='workers'; node index.js
 
 Adding HTTPS support
 - Requires openssl https://www.openssl.org/

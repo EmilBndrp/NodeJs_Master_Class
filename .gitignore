@@ -1,4 +1,14 @@
-Section 3/RESTfulApp/.data/
-Section 3/RESTfulApp/.logs/
+Section 3/RESTfulApp/.data/checks/**
+Section 3/RESTfulApp/.data/tokens/**
+Section 3/RESTfulApp/.data/users/**
+Section 3/RESTfulApp/.logs/**
+
 Section 3/RESTfulApp/lib/tokens.js
-Section 3/RESTfulAppModified/.data/
+
+
+Section 3/RESTfulAppModified/.data/checks/**
+Section 3/RESTfulAppModified/.data/tokens/**
+Section 3/RESTfulAppModified/.data/users/**
+Section 3/RESTfulAppModified/.logs/**
+
+Section 3/RESTfulAppModified/lib/tokens.js

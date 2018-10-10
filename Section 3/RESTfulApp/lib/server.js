@@ -17,11 +17,11 @@
 const fs = require('fs');
 const url = require('url');
 const http = require('http');
-const https = require('https');
-const { StringDecoder } = require('string_decoder');
 const path = require('path');
 const util = require('util');
+const https = require('https');
 const debug = util.debuglog('server');
+const { StringDecoder } = require('string_decoder');
 
 // Local files
 const config = require('./config');

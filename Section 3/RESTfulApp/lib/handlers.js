@@ -10,7 +10,6 @@ const config = require('./config');
 // Define the handlers
 const handlers = {};
 const tokenLength = 20;
-const checkIdLength = 20;
 
 
 // Users
@@ -545,8 +544,8 @@ handlers._checks.post = function (data, callback) {
     const timeoutSeconds = typeof (data.payload.timeoutSeconds) === 'number' &&
         // Check for whole number
         data.payload.timeoutSeconds % 1 === 0 &&
-        data.payload.timeoutSeconds >= 1 &&
-        data.payload.timeoutSeconds <= 5 ?
+        data.payload.timeoutSeconds >= config.timeoutSeconds.min &&
+        data.payload.timeoutSeconds <= config.timeoutSeconds.max ?
         data.payload.timeoutSeconds :
         false;
 
@@ -572,7 +571,7 @@ handlers._checks.post = function (data, callback) {
                         // Verify that the user has less than the max-checks-per-user
                         if (userCheks.length < config.maxChecks) {
                             // Create a random id for the check
-                            const checkId = helpers.createRandomString(checkIdLength);
+                            const checkId = helpers.createRandomString(config.checkIdLength);
 
                             // Create the check object, and include the user's phone
                             const checkObject = {
@@ -630,7 +629,7 @@ handlers._checks.post = function (data, callback) {
 handlers._checks.get = function (data, callback) {
     // Check that the phonenumber provided is valid
     const id = typeof (data.queryStringObject.id) === 'string' &&
-        data.queryStringObject.id.trim().length === checkIdLength ?
+        data.queryStringObject.id.trim().length === config.checkIdLength ?
         data.queryStringObject.id.trim() :
         false;
 
@@ -670,7 +669,7 @@ handlers._checks.get = function (data, callback) {
  */
 handlers._checks.put = function (data, callback) {
     const id = typeof (data.payload.id) === 'string' &&
-        data.payload.id.trim().length === checkIdLength ?
+        data.payload.id.trim().length === config.checkIdLength ?
         data.payload.id.trim() :
         false;
 
@@ -698,8 +697,8 @@ handlers._checks.put = function (data, callback) {
     const timeoutSeconds = typeof (data.payload.timeoutSeconds) === 'number' &&
         // Check for whole number
         data.payload.timeoutSeconds % 1 === 0 &&
-        data.payload.timeoutSeconds >= 1 &&
-        data.payload.timeoutSeconds <= 5 ?
+        data.payload.timeoutSeconds >= config.timeoutSeconds.min &&
+        data.payload.timeoutSeconds <= config.timeoutSeconds.max ?
         data.payload.timeoutSeconds :
         false;
 
@@ -772,7 +771,7 @@ handlers._checks.put = function (data, callback) {
 handlers._checks.delete = function (data, callback) {
     // Check that the id provided is valid
     const id = typeof (data.queryStringObject.id) === 'string' &&
-        data.queryStringObject.id.trim().length === checkIdLength ?
+        data.queryStringObject.id.trim().length === config.checkIdLength ?
         data.queryStringObject.id.trim() :
         false;
 

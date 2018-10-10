@@ -32,6 +32,10 @@ environments.staging = {
     'stdPhoneLength': 8,
     'checkIdLength': 20,
     'twilio': tokens.twilio,
+    'timeoutSeconds': {
+        'min': 1,
+        'max': 5,
+    },
 };
 
 // Production environment

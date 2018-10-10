@@ -19,8 +19,8 @@ app.init = function () {
 
 };
 
-// Execute the app
-app.init();
-
 // Export the app
 module.exports = app;
+
+// Execute the app
+app.init();

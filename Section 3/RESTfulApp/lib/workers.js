@@ -3,10 +3,8 @@
  */
 
 // Dependencies
-const fs = require('fs');
 const url = require('url');
 const http = require('http');
-const path = require('path');
 const https = require('https');
 const _data = require('./data');
 const _logs = require('./logs');
@@ -80,8 +78,8 @@ workers.validateCheckData = function (originalCheckData) {
 
     originalCheckData.timeoutSeconds = typeof (originalCheckData.timeoutSeconds) === 'number' &&
         originalCheckData.timeoutSeconds % 1 === 0 &&
-        originalCheckData.timeoutSeconds >= 1 &&
-        originalCheckData.timeoutSeconds <= 5 ?
+        originalCheckData.timeoutSeconds >= config.timeoutSeconds.min &&
+        originalCheckData.timeoutSeconds <= config.timeoutSeconds.max ?
         originalCheckData.timeoutSeconds :
         false;
 
@@ -126,6 +124,7 @@ workers.performCheck = function (originalCheckData) {
     // Parse the hostname and the path out of the originalCheckData
     const parsedUrl = url.parse(`${originalCheckData.protocol}://${originalCheckData.url}`, true);
     const hostName = parsedUrl.hostname;
+
     // Using 'path' and not 'pathname' because we want the query string
     const path = parsedUrl.path;
 
@@ -275,7 +274,7 @@ workers.log = function (originalCheckData, checkOutcome, state, alertWaranted, t
 workers.loop = function () {
     setInterval(() => {
         workers.gatherAllChecks();
-    }, 1000 * 60);
+    }, 60000);
 };
 
 // Rotate (compress) the log files

@@ -269,14 +269,14 @@ handlers._users.delete = function (data, callback) {
                                             if (err) {
                                                 deletionErrors = true;
                                             }
-                                            checksDeleted++;
-                                            if (checksDeleted === checksToDelete) {
-                                                if (!deletionErrors) {
-                                                    return callback(config.statusCode.ok);
-                                                }
 
-                                                return callback(config.statusCode.internalServerError, { 'Error': 'Errors encountered while attempting to delete all of the users checks. All checks may not have been delete from the system succesfully'});
+                                            checksDeleted++;
+
+                                            if (checksDeleted === checksToDelete && !deletionErrors) {
+                                                return callback(config.statusCode.ok);
                                             }
+
+                                            return callback(config.statusCode.internalServerError, { 'Error': 'Errors encountered while attempting to delete all of the users checks. All checks may not have been delete from the system succesfully' });
                                         });
                                     });
                                 }
@@ -677,7 +677,7 @@ handlers._checks.put = function (data, callback) {
         ['http', 'https'].indexOf(data.payload.protocol) > -1 ?
         data.payload.protocol :
         false;
-    
+
     const url = typeof (data.payload.url) === 'string' &&
         data.payload.url.trim().length > 0 ?
         data.payload.url.trim() :
@@ -809,14 +809,14 @@ handlers._checks.delete = function (data, callback) {
                                                 if (!err) {
                                                     return callback(config.statusCode.ok);
                                                 }
-                    
+
                                                 return callback(config.statusCode.internalServerError, { 'Error': 'Could not update the user' });
                                             });
                                         }
 
                                         return callback(config.statusCode.internalServerError, { 'Error': 'could not find the check on the users object, so could not remove it' });
                                     }
-                
+
                                     return callback(config.statusCode.internalServerError, { 'Error': 'Could not find the specified user who created the check, so could not remove the check from the list of checks on the user object' });
                                 });
                             }
@@ -834,7 +834,7 @@ handlers._checks.delete = function (data, callback) {
     }
 
     return callback(config.statusCode.badRequest, { 'error': 'missing required field (id)' });
-    
+
 };
 
 

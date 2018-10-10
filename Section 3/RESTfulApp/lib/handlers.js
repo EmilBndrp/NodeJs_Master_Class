@@ -101,7 +101,6 @@ handlers._users.post = function (data, callback) {
     return callback(config.statusCode.badRequest, { 'Error': 'missing required fields' });
 };
 
-
 /**
  * Users - get
  * require data: phone

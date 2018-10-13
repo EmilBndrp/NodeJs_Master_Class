@@ -15,7 +15,7 @@ const lib = {};
 lib.baseDir = path.join(__dirname, '/../.logs/');
 
 // Append a string to a file. create the file if it does not exist.
-lib.append = function (file, str, callback) {
+lib.append = function appendStringToFile(file, str, callback) {
     // Open the file for appending
     fs.open(`${lib.baseDir}${file}.log`, 'a', (err, fielDescriptor) => {
         if (!err && fielDescriptor) {
@@ -40,7 +40,7 @@ lib.append = function (file, str, callback) {
 };
 
 // List all the logs, and optionally include the compressed logs
-lib.list = function (includeCompressedLogs, callback) {
+lib.list = function ListLogs(includeCompressedLogs, callback) {
     fs.readdir(lib.baseDir, (err, data) => {
         if (!err && data && data.length > 0) {
             const trimmedFileNames = [];
@@ -66,7 +66,7 @@ lib.list = function (includeCompressedLogs, callback) {
 };
 
 // Compress the contents of one .log file into a .gz.b64 file within the same directory
-lib.compress = function (logId, newFileId, callback) {
+lib.compress = function compressFiles(logId, newFileId, callback) {
     const sourceFile = `${logId}.log`;
     const destFile = `${newFileId}.gz.b64`;
 
@@ -90,7 +90,7 @@ lib.compress = function (logId, newFileId, callback) {
                                         return callback(err);
                                     });
                                 }
-                                
+
                                 return callback(err);
                             });
                         }
@@ -108,7 +108,7 @@ lib.compress = function (logId, newFileId, callback) {
 };
 
 // Decompress the contents of a .gz.b64 file into a string variable
-lib.decompress = function (fileId, callback) {
+lib.decompress = function decompressFiles(fileId, callback) {
     const fileName = `${fileId}.gz.b64`;
 
     fs.readFile(`${lib.baseDir}${fileName}`, 'utf8', (err, str) => {
@@ -133,7 +133,7 @@ lib.decompress = function (fileId, callback) {
 };
 
 // Truncate a log file
-lib.truncate = function (logId, callback) {
+lib.truncate = function truncateFile(logId, callback) {
     fs.truncate(`${lib.baseDir}${logId}.log`, 0, (err) => {
         if (!err) {
             return callback(false);

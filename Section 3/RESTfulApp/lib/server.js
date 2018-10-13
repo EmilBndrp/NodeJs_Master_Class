@@ -34,10 +34,10 @@ const server = {};
 
 // Define a request router
 server.router = {
-    'ping': handlers.ping,
-    'tokens': handlers.tokens,
-    'users': handlers.users,
-    'checks': handlers.checks,
+    ping: handlers.ping,
+    tokens: handlers.tokens,
+    users: handlers.users,
+    checks: handlers.checks,
 };
 
 
@@ -57,7 +57,7 @@ server.router = {
  *              Else the client will keep waiting for more information
  * 
  */
-server.unifiedServer = function (req, res) {
+server.unifiedServer = function unifiedServerObject(req, res) {
 
     // Get the URL and parse it
     const parsedUrl = url.parse(req.url, true);
@@ -73,7 +73,7 @@ server.unifiedServer = function (req, res) {
     const method = req.method.toLowerCase();
 
     // Get the headers as an object
-    const headers = req.headers;
+    const { headers } = req;
 
     // Get the payload, if any
     const decoder = new StringDecoder('utf-8');
@@ -87,30 +87,30 @@ server.unifiedServer = function (req, res) {
         buffer += decoder.end();
 
         // Choose handler this request should go to. If one is not found, use the 'not found handler'
-        const chosenHandler = typeof server.router[trimmedPath] !== 'undefined' ?
-            server.router[trimmedPath] :
-            handlers.notFound;
+        const chosenHandler = typeof server.router[trimmedPath] !== 'undefined'
+            ? server.router[trimmedPath]
+            : handlers.notFound;
 
         // Construct the data object to send to the handler
         const data = {
-            'headers': headers,
-            'method': method,
-            'payload': helpers.parseJsonToObject(buffer),
-            'queryStringObject': queryStringObject,
-            'trimmedPath': trimmedPath,
+            headers,
+            method,
+            queryStringObject,
+            trimmedPath,
+            payload: helpers.parseJsonToObject(buffer),
         };
 
         // Route the request to the handler specified in the router
         chosenHandler(data, (statusCode, payload) => {
             // Use the statuscode defined by the handler or default to 200
-            statusCode = typeof (statusCode) === 'number' ?
-                statusCode :
-                config.statusCode.ok;
+            statusCode = typeof (statusCode) === 'number'
+                ? statusCode
+                : config.statusCode.ok;
 
             // Use the payload called by the handler or default to an empty object
-            payload = typeof (payload) === 'object' ?
-                payload :
-                {};
+            payload = typeof (payload) === 'object'
+                ? payload
+                : {};
 
             // Convert to a string
             const payloadString = JSON.stringify(payload);
@@ -124,12 +124,12 @@ server.unifiedServer = function (req, res) {
              * Log The requested data
              * If the response is 200, print green otherwise print red
              */
-            const debugMessage = '------------------- New Request ---------------------- \n' +
-                `- with this method: ${method.toUpperCase()}\n` +
-                `- Request recieved on path: ${trimmedPath}\n` +
-                `- with these query string parameters: ${JSON.stringify(queryStringObject)}\n` +
-                `- Request recieved with these headers ${JSON.stringify(headers)}\n` +
-                `- Request recieved with this payload: ${buffer}\n`;
+            const debugMessage = '------------------- New Request ---------------------- \n'
+                + `- with this method: ${method.toUpperCase()}\n`
+                + `- Request recieved on path: ${trimmedPath}\n`
+                + `- with these query string parameters: ${JSON.stringify(queryStringObject)}\n`
+                + `- Request recieved with these headers ${JSON.stringify(headers)}\n`
+                + `- Request recieved with this payload: ${buffer}\n`;
 
             if (statusCode === config.statusCode.ok) {
                 debug('\x1b[32m%s\x1b[0m', debugMessage);
@@ -147,8 +147,8 @@ server.httpServer = http.createServer((req, res) => {
 
 // Create the  https server object
 server.httpsServerOptions = {
-    'key': fs.readFileSync(path.join(__dirname, '/../https/key.pem')),
-    'cert': fs.readFileSync(path.join(__dirname, '/../https/cert.pem')),
+    key: fs.readFileSync(path.join(__dirname, '/../https/key.pem')),
+    cert: fs.readFileSync(path.join(__dirname, '/../https/cert.pem')),
 };
 
 server.httpsServer = https.createServer(server.httpsServerOptions, (req, res) => {
@@ -157,7 +157,7 @@ server.httpsServer = https.createServer(server.httpsServerOptions, (req, res) =>
 
 
 // Init function
-server.init = function () {
+server.init = function initializeServer() {
 
     /**
      * The server is started with calling the server.listen method

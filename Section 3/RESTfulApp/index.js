@@ -10,7 +10,7 @@ const workers = require('./lib/workers');
 const app = {};
 
 // Init function
-app.init = function () {
+app.init = function initiation() {
     // Start the server
     server.init();
 

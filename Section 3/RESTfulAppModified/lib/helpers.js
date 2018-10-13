@@ -33,31 +33,26 @@ helpers.parseJsonToObject = function ( str ) {
     }
 };
 
-helpers.createRandomString = function ( strLength ) {
-    strLength = typeof ( strLength ) === 'number' && strLength > 0 ?
-        strLength :
-        false;
+helpers.createRandomString = function createARandomString(strLength) {
+    strLength = typeof (strLength) === 'number'
+        && strLength > 0
+        ? strLength
+        : false;
 
-    if ( strLength ) {
-        // Define all the possible characters that could go int a string
-        const possibleCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
-
-        // Start the final string
-        let str = '';
-
-        for ( let i = 1; i <= strLength; i++ ) {
-            // Get a random character from the possibleCharacters string
-            const randomCharacter = possibleCharacters.charAt( Math.floor( Math.random() * possibleCharacters.length ));
-
-            // Append this character to the final string
-            str += randomCharacter;
-        }
-
-        return str;
+    if (strLength) {
+        // Make an array with the length of the string
+        return [...Array(strLength)]
+            // Assign a random character to each index in the array
+            .map(() => Math.random()
+                .toString(36)
+                .substring(2, 3))
+            // Join the array to a string
+            .join('');
     }
 
     return false;
 };
+
 
 
 module.exports = helpers;

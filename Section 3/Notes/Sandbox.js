@@ -1,19 +1,16 @@
-helpers.createRandomString = function createARandomString(strLength) {
-    strLength = typeof (strLength) === 'number'
-        && strLength > 0
-        ? strLength
-        : false;
+/* eslint "capitalized-comments": 0 */
+/* eslint "curly": 0 */
+/* eslint "no-undef": 0 */
+/* eslint "func-style": 0 */
+/* eslint "consistent-return": 0 */
+/* eslint "no-unused-vars": 0 */
+/* eslint "no-unused-expressions": 0 */
+/* eslint "max-statements-per-line": 2 */
+/* eslint "no-lonely-if": 0 */
+/* eslint "no-empty-function": 0 */
 
-    if (strLength) {
-        // Make an array with the length of the string
-        return [...Array(strLength)]
-            // Assign a random character to each index in the array
-            .map(() => Math.random()
-                .toString(36)
-                .substring(2, 3))
-            // Join the array to a string
-            .join('');
-    }
+const a = 'this is a really really really really really really really really really really really really really really long string';
 
-    return false;
-};
+const thisIsAReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyLongVarableName = 3;
+
+console.log(2 ** 2);

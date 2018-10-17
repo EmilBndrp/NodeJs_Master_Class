@@ -1,7 +1,7 @@
 /**
  * Create and exprot configuration variables
  */
-/* eslint no-process-env: 0 */
+/* eslint no-process-env: 2 */
 
 const tokens = require('./tokens');
 const statusCode = {

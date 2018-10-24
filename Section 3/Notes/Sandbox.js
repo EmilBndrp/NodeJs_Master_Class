@@ -9,8 +9,19 @@
 /* eslint "no-lonely-if": 0 */
 /* eslint "no-empty-function": 0 */
 
-const a = 'this is a really really really really really really really really really really really really really really long string';
+const say = Symbol('talk');
 
-const thisIsAReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyReallyLongVarableName = 3;
+class Cat {
+  constructor() {
+    // call private
+    this[say]();
+  }
 
-console.log(2 ** 2);
+  [say]() {
+    console.log('im private');
+  }
+}
+
+const kevin = new Cat();
+
+kevin.say;

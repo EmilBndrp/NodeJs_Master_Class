@@ -9,7 +9,6 @@ const http = require('http');
 const path = require('path');
 const util = require('util');
 const https = require('https');
-const debug = util.debuglog('server');
 const { StringDecoder } = require('string_decoder');
 
 // Local files
@@ -17,6 +16,8 @@ const config = require('./config');
 const helpers = require('./helpers');
 const router = require('./requestHandlers');
 
+// Define debug channel as 'server'
+const debug = util.debuglog('server');
 
 // Instantiate the server module object
 const server = {};
@@ -31,15 +32,14 @@ server.unifiedServer = function unifiedServerObject(req, res) {
   const path = parsedUrl.pathname;
   const trimmedPath = path.replace(/^\/+|\/+$/g, '');
 
-  // Get the query string as an object
+  /*
+   * Get the query string as an object
+   * Get the http Method
+   * Get the headers as an object
+   */
   const queryStringObject = parsedUrl.query;
-
-  // Get the http Method
   const method = req.method.toLowerCase();
-
-  // Get the headers as an object
   const { headers } = req;
-
 
   // Get the payload, if any
   const decoder = new StringDecoder('utf-8');
@@ -65,7 +65,6 @@ server.unifiedServer = function unifiedServerObject(req, res) {
       trimmedPath,
       payload: helpers.parseJsonToObject(buffer),
     };
-
 
     // Route the request to the handler specified in the router
     chosenHandler(data, (statusCode, payload) => {
@@ -107,6 +106,7 @@ server.unifiedServer = function unifiedServerObject(req, res) {
   });
 };
 
+
 // Create the  http server object
 server.httpServer = http.createServer((req, res) => {
   server.unifiedServer(req, res);
@@ -130,7 +130,6 @@ server.init = function initializeServer() {
   server.httpServer.listen(config.httpPort, () => {
     console.log('\x1b[36m%s\x1b[0m', `The http server is listening on port: ${config.httpPort} in ${config.envName} mode`);
   });
-
 
   // Start the https server
   server.httpsServer.listen(config.httpsPort, () => {

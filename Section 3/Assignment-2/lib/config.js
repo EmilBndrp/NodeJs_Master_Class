@@ -28,13 +28,7 @@ environments.staging = {
   hashingSecret: 'thisIsASecret',
   httpPort: 3000,
   httpsPort: 3001,
-  maxChecks: 5,
-  stdPhoneLength: 8,
-  checkIdLength: 20,
-  timeoutSeconds: {
-    min: 1,
-    max: 5,
-  },
+  tokenLength: 20,
 };
 
 // Production environment
@@ -44,13 +38,7 @@ environments.production = {
   hashingSecret: 'thisIsAlsoASecret',
   httpPort: 5000,
   httpsPort: 5001,
-  maxChecks: 5,
-  stdPhoneLength: 8,
-  checkIdLength: 20,
-  timeoutSeconds: {
-    min: 1,
-    max: 5,
-  },
+  tokenLength: 20,
 };
 
 // Determine which environment was passed as a command-line argument

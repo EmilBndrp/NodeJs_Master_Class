@@ -1,10 +1,8 @@
-/* eslint "max-lines-per-function": 0 */
-
 // Dependencies
 const data = require('../data');
 const helpers = require('../helpers');
 const config = require('../config');
-
+const { verifyToken } = require('./tokens');
 
 // Container for the users submethods
 const userMethod = {};
@@ -26,11 +24,11 @@ userMethod.post = async function createNewUser(requestData) {
     ? requestData.payload.lastName.trim()
     : false;
 
-  const emailAddress = typeof (requestData.payload.emailAddress) === 'string'
-    && requestData.payload.emailAddress.trim().length > 0
-    && requestData.payload.emailAddress.trim().includes('@')
-    && requestData.payload.emailAddress.trim().includes('.')
-    ? requestData.payload.emailAddress.trim()
+  const email = typeof (requestData.payload.email) === 'string'
+    && requestData.payload.email.trim().length > 0
+    && requestData.payload.email.trim().includes('@')
+    && requestData.payload.email.trim().includes('.')
+    ? requestData.payload.email.trim()
     : false;
 
   const streetAddress = typeof (requestData.payload.streetAddress) === 'string'
@@ -48,7 +46,7 @@ userMethod.post = async function createNewUser(requestData) {
     ? true
     : false;
 
-  if (!firstName || !lastName || !emailAddress || !streetAddress || !password || !tosAgreement) {
+  if (!firstName || !lastName || !email || !streetAddress || !password || !tosAgreement) {
     return {
       statusCode: config.statusCode.badRequest,
       payload: { Error: 'missing required fields' },
@@ -57,7 +55,7 @@ userMethod.post = async function createNewUser(requestData) {
 
   // Make sure that the user doesn't already exist
   try {
-    await data.read('users', emailAddress);
+    await data.read('users', email);
 
     return {
       statusCode: config.statusCode.badRequest,
@@ -69,14 +67,14 @@ userMethod.post = async function createNewUser(requestData) {
     const userObject = {
       firstName,
       lastName,
-      emailAddress,
+      email,
       streetAddress,
       hashedPassword,
       tosAgreement,
     };
 
     // Store user on disc
-    await data.create('users', emailAddress, userObject);
+    await data.create('users', email, userObject);
 
     return Promise.resolve();
   }
@@ -107,14 +105,14 @@ userMethod.get = async function getUserInformation(requestData) {
   const token = typeof (requestData.headers.token) === 'string'
     ? requestData.headers.token
     : false;
-
-  /*const tokenIsValid = tokenMethod.verifyToken(token, email);
+  
+  const tokenIsValid = await verifyToken(token, email);
   if (!tokenIsValid) {
     return {
       statusCode: config.statusCode.forbidden,
       payload: { Error: 'Missing required token in header, or token is invalid' },
     };
-  }*/
+  }
 
   try {
     const userData = await data.read('users', email);
@@ -147,11 +145,11 @@ userMethod.put = async function updateUserInformation(requestData) {
     ? requestData.payload.lastName.trim()
     : false;
 
-  const email = typeof (requestData.payload.emailAddress) === 'string'
-    && requestData.payload.emailAddress.trim().length > 0
-    && requestData.payload.emailAddress.trim().includes('@')
-    && requestData.payload.emailAddress.trim().includes('.')
-    ? requestData.payload.emailAddress.trim()
+  const email = typeof (requestData.payload.email) === 'string'
+    && requestData.payload.email.trim().length > 0
+    && requestData.payload.email.trim().includes('@')
+    && requestData.payload.email.trim().includes('.')
+    ? requestData.payload.email.trim()
     : false;
 
   const streetAddress = typeof (requestData.payload.streetAddress) === 'string'
@@ -183,13 +181,13 @@ userMethod.put = async function updateUserInformation(requestData) {
     ? requestData.headers.token
     : false;
 
-  /*const tokenIsValid = tokenMethod.verifyToken(token, email);
+  const tokenIsValid = verifyToken(token, email);
   if (!tokenIsValid) {
     return {
       statusCode: config.statusCode.forbidden,
       payload: { Error: 'Missing required token in header, or token is invalid' },
     };
-  }*/
+  }
 
   try {
     const userData = await data.read('users', email);
@@ -238,13 +236,13 @@ userMethod.delete = async function deleteUser(requestData) {
     ? requestData.headers.token
     : false;
 
-  /*const tokenIsValid = tokenMethod.verifyToken(token, email);
+  const tokenIsValid = verifyToken(token, email);
   if (!tokenIsValid) {
     return {
       statusCode: config.statusCode.forbidden,
       payload: { Error: 'Missing required token in header, or token is invalid' },
     };
-  }*/
+  }
 
   try {
     await data.read('users', email);

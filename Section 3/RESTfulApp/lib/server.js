@@ -82,7 +82,7 @@ server.unifiedServer = function unifiedServerObject(req, res) {
     buffer += decoder.write(data);
   });
 
-  req.on('end', () => {
+  req.on('end', async () => {
     buffer += decoder.end();
 
     // Choose handler this request should go to. If one is not found, use the 'not found handler'
@@ -99,43 +99,42 @@ server.unifiedServer = function unifiedServerObject(req, res) {
       payload: helpers.parseJsonToObject(buffer),
     };
 
-    // Route the request to the handler specified in the router
-    chosenHandler(data, (statusCode, payload) => {
-      // Use the statuscode defined by the handler or default to 200
-      statusCode = typeof (statusCode) === 'number'
-        ? statusCode
-        : config.statusCode.ok;
+    const responseObject = await chosenHandler(data);
 
-      // Use the payload called by the handler or default to an empty object
-      payload = typeof (payload) === 'object'
-        ? payload
-        : {};
+    // Use the statuscode defined by the handler or default to 200
+    const statusCode = typeof (responseObject.statusCode) === 'number'
+      ? responseObject.statusCode
+      : config.statusCode.ok;
 
-      // Convert to a string
-      const payloadString = JSON.stringify(payload);
+    // Use the payload called by the handler or default to an empty object
+    const payload = typeof (responseObject.payload) === 'object'
+      ? responseObject.payload
+      : {};
 
-      // Return response
-      res.setHeader('Content-Type', 'application/json');
-      res.writeHead(statusCode);
-      res.end(payloadString);
+    // Convert to a string
+    const payloadString = await JSON.stringify(payload);
 
-      /**
-       * Log The requested data
-       * If the response is 200, print green otherwise print red
-       */
-      const debugMessage = '------------------- New Request ---------------------- \n'
-                + `- with this method: ${method.toUpperCase()}\n`
-                + `- Request recieved on path: ${trimmedPath}\n`
-                + `- with these query string parameters: ${JSON.stringify(queryStringObject)}\n`
-                + `- Request recieved with these headers ${JSON.stringify(headers)}\n`
-                + `- Request recieved with this payload: ${buffer}\n`;
+    // Return response
+    res.setHeader('Content-Type', 'application/json');
+    res.writeHead(statusCode);
+    res.end(payloadString);
 
-      if (statusCode === config.statusCode.ok) {
-        debug('\x1b[32m%s\x1b[0m', debugMessage);
-      } else {
-        debug('\x1b[31m%s\x1b[0m', debugMessage);
-      }
-    });
+    /**
+     * Log The requested data
+     * If the response is 200, print green otherwise print red
+     */
+    const debugMessage = '------------------- New Request ---------------------- \n'
+      + `- with this method: ${method.toUpperCase()}\n`
+      + `- Request recieved on path: ${trimmedPath}\n`
+      + `- with these query string parameters: ${JSON.stringify(queryStringObject)}\n`
+      + `- Request recieved with these headers ${JSON.stringify(headers)}\n`
+      + `- Request recieved with this payload: ${buffer}\n`;
+
+    if (statusCode === config.statusCode.ok) {
+      debug('\x1b[32m%s\x1b[0m', debugMessage);
+    } else {
+      debug('\x1b[31m%s\x1b[0m', debugMessage);
+    }
   });
 };
 

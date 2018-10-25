@@ -1,8 +1,8 @@
 const config = require('../config');
 
 // Ping handler
-const ping = function pingHandler(data, callback) {
-  return callback(config.statusCode.ok);
+const ping = function pingHandler() {
+  return { statusCode: config.statusCode.ok };
 };
 
 module.exports = ping;

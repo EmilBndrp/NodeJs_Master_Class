@@ -12,16 +12,16 @@ const helpers = {};
 
 
 // Create a SHA256 hash from string
-helpers.hash = function hashString(str) {
+helpers.hash = async function hashString(str) {
   if (typeof (str) === 'string' && str.length > 0) {
-    const hash = crypto.createHmac('sha256', config.hashingSecret)
+    const hash = await crypto.createHmac('sha256', config.hashingSecret)
       .update(str)
       .digest('hex');
 
     return hash;
   }
 
-  return false;
+  return Promise.reject(Error('Invalid password'));
 };
 
 

@@ -82,9 +82,6 @@ server.unifiedServer = function unifiedServerObject(req, res) {
     // Convert to a string
     const payloadString = JSON.stringify(payload);
 
-    console.log(responseObject.payload);
-    
-
     // Return response
     res.setHeader('Content-Type', 'application/json');
     res.writeHead(statusCode);

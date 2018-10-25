@@ -14,37 +14,37 @@ const userMethod = {};
  * Required data: firstName, lastName, phone, password, tosAgreement
  * Optional data: none
  */
-userMethod.post = async function createNewUser(userData) {
+userMethod.post = async function createNewUser(requestData) {
   // Check that all the required data are filled out
-  const firstName = typeof (userData.payload.firstName) === 'string'
-    && userData.payload.firstName.trim().length > 0
-    ? userData.payload.firstName.trim()
+  const firstName = typeof (requestData.payload.firstName) === 'string'
+    && requestData.payload.firstName.trim().length > 0
+    ? requestData.payload.firstName.trim()
     : false;
 
-  const lastName = typeof (userData.payload.lastName) === 'string'
-    && userData.payload.lastName.trim().length > 0
-    ? userData.payload.lastName.trim()
+  const lastName = typeof (requestData.payload.lastName) === 'string'
+    && requestData.payload.lastName.trim().length > 0
+    ? requestData.payload.lastName.trim()
     : false;
 
-  const emailAddress = typeof (userData.payload.emailAddress) === 'string'
-    && userData.payload.emailAddress.trim().length > 0
-    && userData.payload.emailAddress.trim().includes('@')
-    && userData.payload.emailAddress.trim().includes('.')
-    ? userData.payload.emailAddress.trim()
+  const emailAddress = typeof (requestData.payload.emailAddress) === 'string'
+    && requestData.payload.emailAddress.trim().length > 0
+    && requestData.payload.emailAddress.trim().includes('@')
+    && requestData.payload.emailAddress.trim().includes('.')
+    ? requestData.payload.emailAddress.trim()
     : false;
 
-  const streetAddress = typeof (userData.payload.streetAddress) === 'string'
-    && userData.payload.streetAddress.trim().length > 0
-    ? userData.payload.streetAddress.trim()
+  const streetAddress = typeof (requestData.payload.streetAddress) === 'string'
+    && requestData.payload.streetAddress.trim().length > 0
+    ? requestData.payload.streetAddress.trim()
     : false;
 
-  const password = typeof (userData.payload.password) === 'string'
-    && userData.payload.password.trim().length > 0
-    ? userData.payload.password.trim()
+  const password = typeof (requestData.payload.password) === 'string'
+    && requestData.payload.password.trim().length > 0
+    ? requestData.payload.password.trim()
     : false;
 
-  const tosAgreement = typeof (userData.payload.tosAgreement) === 'boolean'
-    && userData.payload.tosAgreement === true
+  const tosAgreement = typeof (requestData.payload.tosAgreement) === 'boolean'
+    && requestData.payload.tosAgreement === true
     ? true
     : false;
 

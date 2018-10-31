@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const { promisify } = require('util');
 const helpers = require('./helpers');
+const config = require('./config');
 
 // Converts the fs methods from callback functions to promise functions
 const promiseFs = {
@@ -18,6 +19,8 @@ const promiseFs = {
   write: promisify(fs.writeFile),
   close: promisify(fs.close),
   truncate: promisify(fs.ftruncate),
+
+  // FIXME: change fs.read to fs.readFile
   read: promisify(fs.read),
   unlink: promisify(fs.unlink),
 };
@@ -30,13 +33,26 @@ lib.baseDir = path.join(__dirname, '/../.data/');
 
 // Write data to a file
 lib.create = async function createAndWriteToFile(dir, file, data) {
-  // Open the file and return a filedesciptor
-  const fileDescriptor = await promiseFs.open(`${lib.baseDir}${dir}/${file}.json`, 'wx');
+  try {
+    // Open the file and return a filedesciptor
+    const fileDescriptor = await promiseFs.open(`${lib.baseDir}${dir}/${file}.json`, 'wx');
 
-  // Write to file and close it
-  const stringData = JSON.stringify(data);
-  await promiseFs.write(fileDescriptor, stringData);
-  await promiseFs.close(fileDescriptor);
+    // Write to file and close it
+    const stringData = JSON.stringify(data);
+    await promiseFs.write(fileDescriptor, stringData);
+    await promiseFs.close(fileDescriptor);
+
+    return Promise.resolve();
+  } catch (error) {
+    if (error.code === 'EEXIST') {
+      const err = Error(`${file} already exist`);
+      err.statusCode = config.statusCode.internalServerError;
+
+      return Promise.reject(err);
+    }
+
+    return Promise.reject(error);
+  }
 };
 
 // Read data from a file

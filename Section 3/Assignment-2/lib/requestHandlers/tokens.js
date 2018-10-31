@@ -110,7 +110,7 @@ tokenMethod.put = async function updateTokenExpiration(requestData) {
     if (tokenData.expires > Date.now()) {
       // Set the expirationdate to an hour from now
       const oneHourInMilliseconds = 3600000;
-                    
+
       tokenData.expires = Date.now() + oneHourInMilliseconds;
       await data.update('tokens', id, tokenData);
 
@@ -162,17 +162,20 @@ tokenMethod.delete = async function deleteToken(requestData) {
 
 // Verify if a given token id is currently valid for a given user
 exports.verifyToken = async function verifyValidTokenForUser(tokenId, email) {
+  const err = Error('Token isn\'t valid');
+  err.statusCode = config.statusCode.badRequest;
+
   try {
     // Lookup the token
     const tokenData = await data.read('tokens', tokenId);
 
     if (tokenData.email === email && tokenData.expires > Date.now()) {
-      return true;
+      return Promise.resolve(true);
     }
 
-    return false;
+    return Promise.reject(err);
   } catch (error) {
-    return false;
+    return Promise.reject(err);
   }
 };
 

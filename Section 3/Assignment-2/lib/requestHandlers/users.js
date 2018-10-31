@@ -2,10 +2,12 @@
 const data = require('../data');
 const helpers = require('../helpers');
 const config = require('../config');
+const validate = require('../validate');
 const { verifyToken } = require('./tokens');
 
 // Container for the users submethods
 const userMethod = {};
+
 
 /**
  * Users - post
@@ -13,203 +15,105 @@ const userMethod = {};
  * Optional data: none
  */
 userMethod.post = async function createNewUser(requestData) {
-  // Check that all the required data are filled out
-  const firstName = typeof (requestData.payload.firstName) === 'string'
-    && requestData.payload.firstName.trim().length > 0
-    ? requestData.payload.firstName.trim()
-    : false;
+  // Check that all the required data are filled out correctly
+  const userObject = {
+    email: await validate.email(requestData.payload.email),
+    firstName: await validate.firstName(requestData.payload.firstName),
+    lastName: await validate.lastName(requestData.payload.lastName),
+    streetAddress: await validate.streetAddress(requestData.payload.streetAddress),
+    tosAgreement: await validate.tos(requestData.payload.tosAgreement),
 
-  const lastName = typeof (requestData.payload.lastName) === 'string'
-    && requestData.payload.lastName.trim().length > 0
-    ? requestData.payload.lastName.trim()
-    : false;
+    // Validate the password then hash it
+    hashedPassword: await validate.password(requestData.payload.password)
+      .then((validatedPassword) => helpers.hash(validatedPassword)),
+  };
 
-  const email = typeof (requestData.payload.email) === 'string'
-    && requestData.payload.email.trim().length > 0
-    && requestData.payload.email.trim().includes('@')
-    && requestData.payload.email.trim().includes('.')
-    ? requestData.payload.email.trim()
-    : false;
+  // Store user on disc
+  await data.create('users', userObject.email, userObject);
 
-  const streetAddress = typeof (requestData.payload.streetAddress) === 'string'
-    && requestData.payload.streetAddress.trim().length > 0
-    ? requestData.payload.streetAddress.trim()
-    : false;
-
-  const password = typeof (requestData.payload.password) === 'string'
-    && requestData.payload.password.trim().length > 0
-    ? requestData.payload.password.trim()
-    : false;
-
-  const tosAgreement = typeof (requestData.payload.tosAgreement) === 'boolean'
-    && requestData.payload.tosAgreement === true
-    ? true
-    : false;
-
-  if (!firstName || !lastName || !email || !streetAddress || !password || !tosAgreement) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'missing required fields' },
-    };
-  }
-
-  // Make sure that the user doesn't already exist
-  try {
-    await data.read('users', email);
-
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'User already exists' },
-    };
-  } catch (err) {
-    // Hash the password
-    const hashedPassword = await helpers.hash(password);
-    const userObject = {
-      firstName,
-      lastName,
-      email,
-      streetAddress,
-      hashedPassword,
-      tosAgreement,
-    };
-
-    // Store user on disc
-    await data.create('users', email, userObject);
-
-    return Promise.resolve();
-  }
+  return {
+    statusCode: config.statusCode.ok,
+  };
 };
+
 
 /**
  * Users - get
- * require data: phone
+ * required data: email
  * optional data: none
- * only let an authorized user access their object, dont let them access anyone elses
  * 
+ * only let an authorized user access their object,
+ * dont let them access anyone elses
  */
 userMethod.get = async function getUserInformation(requestData) {
   // Check that the email provided is valid
-  const email = typeof (requestData.queryStringObject.email) === 'string'
-    && requestData.queryStringObject.email.trim().length > 0
-    ? requestData.queryStringObject.email.trim()
-    : false;
+  const email = await validate.email(requestData.queryStringObject.email);
 
-  if (!email) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'missing required fields email' },
-    };
-  }
+  // Get the token from the headers then validate and verify it
+  const token = await validate.token(requestData.headers.token);
+  await verifyToken(token, email);
 
-  // Get the token from the headers
-  const token = typeof (requestData.headers.token) === 'string'
-    ? requestData.headers.token
-    : false;
-  
-  const tokenIsValid = await verifyToken(token, email);
-  if (!tokenIsValid) {
-    return {
-      statusCode: config.statusCode.forbidden,
-      payload: { Error: 'Missing required token in header, or token is invalid' },
-    };
-  }
+  const userData = await data.read('users', email);
+  delete userData.hashedPassword;
 
-  try {
-    const userData = await data.read('users', email);
-    delete userData.hashedPassword;
-
-    return {
-      statusCode: config.statusCode.ok,
-      payload: userData,
-    };
-  } catch (error) {
-    return { statusCode: config.statusCode.notFound };
-  }
+  return {
+    statusCode: config.statusCode.ok,
+    payload: userData,
+  };
 };
+
 
 /**
  * Users - put
- * required data: phone
+ * required data: email
  * Optional data: firstname, lastname, password (at least one must be specified)
- * 
  */
 userMethod.put = async function updateUserInformation(requestData) {
   // Check that all the required data are filled out
-  const firstName = typeof (requestData.payload.firstName) === 'string'
-    && requestData.payload.firstName.trim().length > 0
-    ? requestData.payload.firstName.trim()
-    : false;
+  const { email } = requestData.payload;
+  const { token } = requestData.headers;
+  await validate.email(email);
+  await validate.token(token);
+  await verifyToken(token, email);
 
-  const lastName = typeof (requestData.payload.lastName) === 'string'
-    && requestData.payload.lastName.trim().length > 0
-    ? requestData.payload.lastName.trim()
-    : false;
+  // Get the users data from the server 
+  const userData = await data.read('users', email);
 
-  const email = typeof (requestData.payload.email) === 'string'
-    && requestData.payload.email.trim().length > 0
-    && requestData.payload.email.trim().includes('@')
-    && requestData.payload.email.trim().includes('.')
-    ? requestData.payload.email.trim()
-    : false;
-
-  const streetAddress = typeof (requestData.payload.streetAddress) === 'string'
-    && requestData.payload.streetAddress.trim().length > 0
-    ? requestData.payload.streetAddress.trim()
-    : false;
-
-  const password = typeof (requestData.payload.password) === 'string'
-    && requestData.payload.password.trim().length > 0
-    ? requestData.payload.password.trim()
-    : false;
-
-  if (!email) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'Missing required field email' },
-    };
+  // First name
+  const { firstName } = requestData.payload;
+  if (firstName) {
+    await validate.firstName(firstName);
+    userData.firstName = firstName;
   }
 
-  if (!(firstName || lastName || streetAddress || password)) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'Missing fields to update' },
-    };
+  // Last name
+  const { lastName } = requestData.payload;
+  if (lastName) {
+    await validate.lastName(lastName);
+    userData.lastName = lastName;
   }
 
-  // Get the token from the headers
-  const token = typeof (requestData.headers.token) === 'string'
-    ? requestData.headers.token
-    : false;
-
-  const tokenIsValid = verifyToken(token, email);
-  if (!tokenIsValid) {
-    return {
-      statusCode: config.statusCode.forbidden,
-      payload: { Error: 'Missing required token in header, or token is invalid' },
-    };
+  // Street address
+  const { streetAddress } = requestData.payload;
+  if (streetAddress) {
+    await validate.streetAddress(streetAddress);
+    userData.streetAddress = streetAddress;
   }
 
-  try {
-    const userData = await data.read('users', email);
-
-    // Update the fileds that are neccesary
-    if (firstName) {
-      userData.firstName = firstName;
-    }
-    if (lastName) {
-      userData.lastName = lastName;
-    }
-    if (password) {
-      userData.hashedPassword = helpers.hash(password);
-    }
-
-    await data.update('users', email, userData);
-
-    return { statusCode: config.statusCode.ok };
-  } catch (error) {
-    return { statusCode: config.statusCode.notFound };
+  // Password
+  const { password } = requestData.payload;
+  if (password) {
+    await validate.password(password);
+    userData.hashedPassword = await helpers.hash(password);
   }
+
+  data.update('users', email, userData);
+
+  return {
+    statusCode: config.statusCode.ok,
+  };
 };
+
 
 /**
  * Users - delete
@@ -219,47 +123,20 @@ userMethod.put = async function updateUserInformation(requestData) {
  */
 userMethod.delete = async function deleteUser(requestData) {
   // Check that the email provided is valid
-  const email = typeof (requestData.queryStringObject.email) === 'string'
-    && requestData.queryStringObject.email.trim().length > 0
-    ? requestData.queryStringObject.email.trim()
-    : false;
+  const { email } = requestData.queryStringObject;
+  const { token } = requestData.headers;
+  await validate.email(email);
+  await validate.token(token);
+  await verifyToken(token, email);
 
-  if (!email) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'missing required field (email)' },
-    };
-  }
-
-  // Get the token from the headers
-  const token = typeof (requestData.headers.token) === 'string'
-    ? requestData.headers.token
-    : false;
-
-  const tokenIsValid = verifyToken(token, email);
-  if (!tokenIsValid) {
-    return {
-      statusCode: config.statusCode.forbidden,
-      payload: { Error: 'Missing required token in header, or token is invalid' },
-    };
-  }
-
-  try {
-    await data.read('users', email);
-    await data.delete('users', email);
-
-    return { statusCode: config.statusCode.ok };
-  } catch (error) {
-    return {
-      statusCode: config.statusCode.notFound,
-    };
-  }
+  await data.delete('users', email);
 };
+
 
 /**
  * Users handle
  */
-const users = function usersHandler(data) {
+const users = async function usersHandler(data) {
   const acceptableMethods = [
     'post',
     'get',
@@ -268,7 +145,23 @@ const users = function usersHandler(data) {
   ];
 
   if (acceptableMethods.indexOf(data.method) > -1) {
-    return userMethod[data.method](data);
+    try {
+      const response = await userMethod[data.method](data);
+
+      return response;
+    } catch (error) {
+      if (error.statusCode) {
+        return {
+          statusCode: error.statusCode,
+          payload: { Error: error.message },
+        };
+      }
+
+      return {
+        statusCode: config.statusCode.internalServerError,
+        payload: { Error: `Unkown error: ${error.message}` },
+      };
+    }
   }
 
   return {
@@ -276,5 +169,6 @@ const users = function usersHandler(data) {
     payload: { Error: 'Method not allowed' },
   };
 };
+
 
 module.exports = users;

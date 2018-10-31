@@ -142,7 +142,7 @@ const rules = {
     'consistent-return': 2,
   
     // enforce a maximum function length
-    'max-lines-per-function': ['warn', {
+    'max-lines-per-function': ['off', {
       max: 50,
       skipBlankLines: true,
       skipComments: true,

@@ -53,7 +53,7 @@ server.unifiedServer = function unifiedServerObject(req, res) {
     buffer += decoder.end();
 
     // Construct the data object to send to the handler
-    const data = {
+    const requestObject = {
       headers,
       method,
       queryStringObject,
@@ -67,7 +67,7 @@ server.unifiedServer = function unifiedServerObject(req, res) {
       : router.notFound;
 
     // Route the request to the handler specified in the router
-    const responseObject = await chosenHandler(data) || {};
+    const responseObject = await chosenHandler(requestObject) || {};
 
     // Use the statuscode defined by the handler or default to 200
     const statusCode = typeof (responseObject.statusCode) === 'number'

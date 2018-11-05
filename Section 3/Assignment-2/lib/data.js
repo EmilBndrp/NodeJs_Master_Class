@@ -1,9 +1,6 @@
 /**
  * Library for storing and editing data
  * utilizing promises
- *
- * TODO:
- *  - configure functions to work with a callback
  */
 
 // Dependencies
@@ -18,10 +15,8 @@ const promiseFs = {
   open: promisify(fs.open),
   write: promisify(fs.writeFile),
   close: promisify(fs.close),
-  truncate: promisify(fs.ftruncate),
-
-  // FIXME: change fs.read to fs.readFile
-  read: promisify(fs.read),
+  truncate: promisify(fs.truncate),
+  readFile: promisify(fs.readFile),
   unlink: promisify(fs.unlink),
 };
 
@@ -44,51 +39,89 @@ lib.create = async function createAndWriteToFile(dir, file, data) {
 
     return Promise.resolve();
   } catch (error) {
-    if (error.code === 'EEXIST') {
-      const err = Error(`${file} already exist`);
-      err.statusCode = config.statusCode.internalServerError;
+    switch (error.code) {
+      case 'EEXIST': {
+        const err = Error(`${dir}: ${file} already exist`);
+        err.statusCode = config.statusCode.badRequest;
 
-      return Promise.reject(err);
+        return Promise.reject(err);
+      }
+
+      default: {
+        const err = new Error(`Could not create the new ${dir}`);
+        err.statusCode = config.statusCode.internalServerError;
+
+        return err;
+      }
     }
-
-    return Promise.reject(error);
   }
 };
 
-// Read data from a file
-lib.read = function readFileFromDirectory(dir, file) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(`${lib.baseDir}${dir}/${file}.json`, 'utf-8', (err, data) => {
-      if (!err && data) {
-        const parsedData = helpers.parseJsonToObject(data);
 
-        return resolve(parsedData);
+// Read data from a file
+lib.read = async function readFileFromDirectory(dir, file) {
+  try {
+    const data = await promiseFs.readFile(`${lib.baseDir}${dir}/${file}.json`, 'utf-8');
+    const parsedData = helpers.parseJsonToObject(data);
+
+    return parsedData;
+  } catch (error) {
+    switch (error.code) {
+      case 'ENOENT': {
+        const err = Error(`${dir}: ${file} does not exist`);
+        err.statusCode = config.statusCode.notFound;
+
+        return Promise.reject(err);
       }
 
-      return reject(err);
-    });
-  });
+      default: {
+        const err = new Error('Internal server error.');
+        err.statusCode = config.statusCode.internalServerError;
+
+        return err;
+      }
+    }
+  }
 };
+
 
 // Update data inside a file
 lib.update = async function updateFileInDirectory(dir, file, data) {
-  // Open the file
-  const fileDescriptor = await promiseFs.open(`${lib.baseDir}${dir}/${file}.json`, 'r+');
+  try {
+    // Open the file
+    const fileDescriptor = await promiseFs.open(`${lib.baseDir}${dir}/${file}.json`, 'r+');
 
-  // Truncate the file
-  await promiseFs.truncate(fileDescriptor);
+    // Truncate the file
+    await promiseFs.truncate(fileDescriptor);
 
-  // Write to the file and close it
-  const stringData = JSON.stringify(data);
-  await promiseFs.write(fileDescriptor, stringData);
-  await promiseFs.close(fileDescriptor);
+    // Write to the file and close it
+    const stringData = JSON.stringify(data);
+    await promiseFs.write(fileDescriptor, stringData);
+    await promiseFs.close(fileDescriptor);
+
+    return Promise.resolve();
+  } catch (error) {
+    const err = new Error('Internal server error.');
+    err.statusCode = config.statusCode.internalServerError;
+
+    return err;
+  }
 };
+
 
 // Delete a file
 lib.delete = function deleteFileFromDirectory(dir, file) {
-  // Unlink the file
-  return promiseFs.unlink(`${lib.baseDir}${dir}/${file}.json`);
+  try {
+    // Unlink the file
+    return promiseFs.unlink(`${lib.baseDir}${dir}/${file}.json`);
+  } catch (error) {
+    const err = new Error('Internal server error.');
+    err.statusCode = config.statusCode.internalServerError;
+
+    return err;
+  }
 };
+
 
 // Exporting module
 module.exports = lib;

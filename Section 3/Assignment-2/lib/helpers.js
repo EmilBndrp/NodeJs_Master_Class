@@ -20,8 +20,10 @@ helpers.hash = async function hashString(str) {
 
     return hash;
   }
+  const err = new Error('Could not hash the user\'s password');
+  err.statusCode = config.statusCode.internalServerError;
 
-  return Promise.reject(Error('Invalid password'));
+  return err;
 };
 
 

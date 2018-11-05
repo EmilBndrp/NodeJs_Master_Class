@@ -79,29 +79,27 @@ userMethod.put = async function updateUserInformation(requestData) {
   // Get the users data from the server 
   const userData = await data.read('users', email);
 
+  const { firstName, lastName, streetAddress, password } = requestData.payload;
+
   // First name
-  const { firstName } = requestData.payload;
   if (firstName) {
     await validate.firstName(firstName);
     userData.firstName = firstName;
   }
 
   // Last name
-  const { lastName } = requestData.payload;
   if (lastName) {
     await validate.lastName(lastName);
     userData.lastName = lastName;
   }
 
   // Street address
-  const { streetAddress } = requestData.payload;
   if (streetAddress) {
     await validate.streetAddress(streetAddress);
     userData.streetAddress = streetAddress;
   }
 
   // Password
-  const { password } = requestData.payload;
   if (password) {
     await validate.password(password);
     userData.hashedPassword = await helpers.hash(password);

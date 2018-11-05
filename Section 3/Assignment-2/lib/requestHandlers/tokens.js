@@ -2,185 +2,143 @@
 const data = require('../data');
 const helpers = require('../helpers');
 const config = require('../config');
+const validate = require('../validate');
 
 
 // Container for the users submethods
 const tokenMethod = {};
 
+
+/**
+ * Create token
+ * 
+ * @param {Object} RequestData - The request object recieved from the client.
+ * @returns {Object} 
+ */
 tokenMethod.post = async function createToken(requestData) {
-  const email = typeof (requestData.payload.email) === 'string'
-    && requestData.payload.email.trim().length > 0
-    ? requestData.payload.email.trim()
-    : false;
+  const { email, password } = requestData.payload;
+  await validate.email(email);
+  await validate.password(password);
 
-  const password = typeof (requestData.payload.password) === 'string'
-    && requestData.payload.password.trim().length > 0
-    ? requestData.payload.password.trim()
-    : false;
+  const userData = await data.read('users', email);
 
-  if (!(email && password)) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'Missing erquired fields' },
-    };
+  // Hash the sent password and compare it to the hashed password stored in userData
+  const hashedPassword = await helpers.hash(password);
+
+  if (hashedPassword !== userData.hashedPassword) {
+    const err = new Error('Password did not match the specified user\'s password');
+    err.statusCode = config.statusCode.forbidden;
+
+    return err;
   }
 
-  try {
-    const userData = await data.read('users', email);
+  // If valid create a new token with a random name. Set expiration date 1 hour in the future
+  const tokenId = helpers.createRandomString(config.tokenLength);
+  const oneHourInMilliseconds = 3600000;
+  const expires = Date.now() + oneHourInMilliseconds;
+  const tokenObject = {
+    email,
+    expires,
+    id: tokenId,
+  };
 
-    // Hash the sent password and compare is to the hashed password stored in userData
-    const hashedPassword = await helpers.hash(password);
+  await data.create('tokens', tokenId, tokenObject);
 
-    if (hashedPassword !== userData.hashedPassword) {
-      return {
-        statusCode: config.statusCode.forbidden,
-        payload: { Error: 'Password did not match the specified user\'s password' },
-      };
-    }
-
-    // If valid create a new token with a random name. Set expiration date 1 hour in the future
-    const tokenId = helpers.createRandomString(config.tokenLength);
-    const oneHourInMilliseconds = 3600000;
-    const expires = Date.now() + oneHourInMilliseconds;
-    const tokenObject = {
-      email,
-      expires,
-      id: tokenId,
-    };
-
-    await data.create('tokens', tokenId, tokenObject);
-
-    return {
-      statusCode: config.statusCode.ok,
-      payload: tokenObject,
-    };
-  } catch (error) {
-    return {};
-  }
+  return {
+    statusCode: config.statusCode.ok,
+    payload: tokenObject,
+  };
 };
 
+
+/**
+ * Get token
+ */
 tokenMethod.get = async function getTokenData(requestData) {
-  const id = typeof (requestData.queryStringObject.id) === 'string'
-        && requestData.queryStringObject.id.trim().length === config.tokenLength
-    ? requestData.queryStringObject.id.trim()
-    : false;
+  const { id } = requestData.queryStringObject;
+  await validate.token(id);
 
-  if (!id) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'missing required field (id)' },
-    };
-  }
+  const tokendata = await data.read('tokens', id);
 
-  try {
-    const tokendata = await data.read('tokens', id);
-
-    return {
-      statusCode: config.statusCode.ok,
-      payload: tokendata,
-    };
-  } catch (error) {
-    return {
-      statusCode: config.statusCode.notFound,
-    };
-  }
+  return {
+    statusCode: config.statusCode.ok,
+    payload: tokendata,
+  };
 };
 
+
+/**
+ * Update token
+ */
 tokenMethod.put = async function updateTokenExpiration(requestData) {
-  const id = typeof (requestData.payload.id) === 'string'
-    && requestData.payload.id.trim().length > 0
-    ? requestData.payload.id.trim()
-    : false;
+  const { id, extend } = requestData.payload;
+  await validate.token(id);
 
-  const extend = typeof (requestData.payload.extend) === 'boolean'
-    && requestData.payload.extend === true
-    ? true
-    : false;
+  if (!extend) {
+    const err = new Error('Missing required fields or fields are invalid');
+    err.statusCode = config.statusCode.badRequest;
 
-  if (!id || !extend) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'Missing required fields or fields are invalid' },
-    };
+    return err;
   }
 
-  try {
-    const tokenData = await data.read('tokens', id);
+  const tokenData = await data.read('tokens', id);
+  if (tokenData.expires < Date.now()) {
+    const err = new Error('The token has already expired, and cannot be extended');
+    err.statusCode = config.statusCode.badRequest;
 
-    if (tokenData.expires > Date.now()) {
-      // Set the expirationdate to an hour from now
-      const oneHourInMilliseconds = 3600000;
-
-      tokenData.expires = Date.now() + oneHourInMilliseconds;
-      await data.update('tokens', id, tokenData);
-
-      return {
-        statusCode: config.statusCode.ok,
-      };
-    }
-
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'The token has already expired, and cannot be extended' },
-    };
-  } catch (error) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: `error: ${error}` },
-    };
+    return err;
   }
+
+  // Set the expirationdate to an hour from now
+  const oneHourInMilliseconds = 3600000;
+
+  tokenData.expires = Date.now() + oneHourInMilliseconds;
+  await data.update('tokens', id, tokenData);
+
+  return {
+    statusCode: config.statusCode.ok,
+  };
 };
 
+
+/**
+ * Delete token
+ */
 tokenMethod.delete = async function deleteToken(requestData) {
   // Check that the id provided is valid
-  const id = typeof (requestData.queryStringObject.id) === 'string'
-    && requestData.queryStringObject.id.trim().length === config.tokenLength
-    ? requestData.queryStringObject.id.trim()
-    : false;
+  const { id } = requestData.queryStringObject;
 
-  if (!id) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: 'missing required field (token id)' },
-    };
-  }
+  await validate.token(id);
+  await data.read('tokens', id);
+  await data.delete('tokens', id);
 
-  try {
-    await data.read('tokens', id);
-    await data.delete('tokens', id);
-
-    return {
-      statusCode: config.statusCode.ok,
-    };
-  } catch (error) {
-    return {
-      statusCode: config.statusCode.badRequest,
-      payload: { Error: `error: ${error}` },
-    };
-  }
+  return {
+    statusCode: config.statusCode.ok,
+  };
 };
 
-// Verify if a given token id is currently valid for a given user
+
+/**
+ * Verify if a given token id is currently valid for a given user
+ */
 exports.verifyToken = async function verifyValidTokenForUser(tokenId, email) {
-  const err = Error('Token isn\'t valid');
-  err.statusCode = config.statusCode.badRequest;
-
-  try {
-    // Lookup the token
-    const tokenData = await data.read('tokens', tokenId);
-
-    if (tokenData.email === email && tokenData.expires > Date.now()) {
-      return Promise.resolve(true);
-    }
-
-    return Promise.reject(err);
-  } catch (error) {
-    return Promise.reject(err);
+  // Lookup the token
+  const tokenData = await data.read('tokens', tokenId);
+  if (tokenData.email === email && tokenData.expires > Date.now()) {
+    return Promise.resolve(true);
   }
+
+  const err = Error('Missing required token in header, or token is invalid');
+  err.statusCode = config.statusCode.forbidden;
+
+  return Promise.reject(err);
 };
 
-// Token handler
-exports.tokens = function tokenHandler(data) {
+
+/**
+ * Token handler
+ */
+exports.tokens = async function tokenHandler(data) {
   const acceptableMethods = [
     'post',
     'get',
@@ -189,7 +147,25 @@ exports.tokens = function tokenHandler(data) {
   ];
 
   if (acceptableMethods.indexOf(data.method) > -1) {
-    return tokenMethod[data.method](data);
+    try {
+      const response = await tokenMethod[data.method](data);
+
+      return response;
+    } catch (error) {
+      if (error.statusCode) {
+        return {
+          statusCode: error.statusCode,
+          payload: { Error: error.message },
+        };
+      }
+
+      console.log(`Unkown error: ${error.message}`);
+
+      return {
+        statusCode: config.statusCode.internalServerError,
+        payload: { Error: `Unkown error: ${error.message}` },
+      };
+    }
   }
 
   return {

@@ -5,15 +5,29 @@ const config = require('../config');
 const validate = require('../validate');
 
 
+/**
+ * Verify if a given token id is currently valid for a given user
+ */
+const verifyToken = async function verifyValidTokenForUser(tokenId, email) {
+  // Lookup the token
+  const tokenData = await data.read('tokens', tokenId);
+  if (tokenData.email === email && tokenData.expires > Date.now()) {
+    return Promise.resolve(true);
+  }
+
+  const err = Error('Missing required token in header, or token is invalid');
+  err.statusCode = config.statusCode.forbidden;
+
+  return Promise.reject(err);
+};
+
+
 // Container for the users submethods
 const tokenMethod = {};
 
 
 /**
  * Create token
- * 
- * @param {Object} RequestData - The request object recieved from the client.
- * @returns {Object} 
  */
 tokenMethod.post = async function createToken(requestData) {
   const { email, password } = requestData.payload;
@@ -118,21 +132,8 @@ tokenMethod.delete = async function deleteToken(requestData) {
 };
 
 
-/**
- * Verify if a given token id is currently valid for a given user
- */
-exports.verifyToken = async function verifyValidTokenForUser(tokenId, email) {
-  // Lookup the token
-  const tokenData = await data.read('tokens', tokenId);
-  if (tokenData.email === email && tokenData.expires > Date.now()) {
-    return Promise.resolve(true);
-  }
-
-  const err = Error('Missing required token in header, or token is invalid');
-  err.statusCode = config.statusCode.forbidden;
-
-  return Promise.reject(err);
-};
+// Export verifyToken seperatly
+exports.verifyToken = verifyToken;
 
 
 /**

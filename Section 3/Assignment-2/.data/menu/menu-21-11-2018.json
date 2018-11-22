@@ -1,0 +1,254 @@
+{
+  "1": {
+    "name": "Margherita",
+    "toppings": ["tomatosauce", "2 x cheese"],
+    "hasLunchOffer": true,
+    "price": 50
+  },
+  "1a": {
+    "name": "Quatroformaggi",
+    "toppings": ["tomatosauce", "cheese", "mozzarella", "gorgonzola", "parmasancheese"],
+    "hasLunchOffer": true,
+    "price": 63
+  },
+  "2": {
+    "name": "Margherita",
+    "toppings": ["tomatosauce", "cheese", "ham"],
+    "hasLunchOffer": true,
+    "price": 55
+  },
+  "2a": {
+    "name": "Lukas",
+    "toppings": ["tomatosauce", "cheese", "pepperoni"],
+    "hasLunchOffer": true,
+    "price": 55
+  },
+  "3": {
+    "name": "Amerikaner",
+    "toppings": ["tomatosauce", "cheese", "ground beef"],
+    "hasLunchOffer": true,
+    "price": 55
+  },
+  "4": {
+    "name": "Carbonara",
+    "toppings": ["tomatosauce", "cheese", "ground beef", "spaghetti", "cocktail sausage"],
+    "hasLunchOffer": true,
+    "price": 70
+  },
+  "5": {
+    "name": "Hawai",
+    "toppings": ["tomatosauce", "cheese", "ham", "pineapple"],
+    "hasLunchOffer": true,
+    "price": 60
+  },
+  "6": {
+    "name": "Vesuvio",
+    "toppings": ["tomatosauce", "cheese", "ham", "pepperoni", "cocktail sausage"],
+    "hasLunchOffer": true,
+    "price": 70
+  },
+  "7": {
+    "name": "Pizza Bolognese",
+    "toppings": ["tomatosauce", "cheese", "meat sauce", "onion", "pepperoni"],
+    "hasLunchOffer": true,
+    "price": 65
+  },
+  "8": {
+    "name": "Capricciosa",
+    "toppings": ["tomatosauce", "cheese", "ham", "onion", "mushroom"],
+    "hasLunchOffer": true,
+    "price": 60
+  },
+  "9": {
+    "name": "Pizza Bearnaise",
+    "toppings": ["tomatosauce", "cheese", "kebab", "ham", "onion", "bearnaise sauce"],
+    "hasLunchOffer": false,
+    "price": 70
+  },
+  "9a": {
+    "name": "Pizza Bearnaise 2",
+    "toppings": ["tomatosauce", "cheese", "ham", "chicken", "cocktail sausage", "bearnaise sauce"],
+    "hasLunchOffer": false,
+    "price": 80
+  },
+  "10": {
+    "name": "Star",
+    "toppings": ["tomatosauce", "cheese", "ham", "chicken", "ground beef"],
+    "hasLunchOffer": false,
+    "price": 80
+  },
+  "11": {
+    "name": "Babas",
+    "toppings": ["tomatosauce", "cheese", "meat sauce", "bacon", "onion", "red bellpepper"],
+    "hasLunchOffer": true,
+    "price": 67
+  },
+  "12": {
+    "name": "Ciao ciao",
+    "toppings": ["tomatosauce", "cheese", "ham", "meat sauce", "onion", "garlic"],
+    "hasLunchOffer": true,
+    "price": 70
+  },
+  "13": {
+    "name": "Gorgonzola",
+    "toppings": ["tomatosauce", "cheese", "kebab", "gorgonzola", "onion", "garlic"],
+    "hasLunchOffer": true,
+    "price": 68
+  },
+  "14": {
+    "name": "Feta",
+    "toppings": ["tomatosauce", "cheese", "pepperoni", "feta cheese", "olives", "paprika"],
+    "hasLunchOffer": true,
+    "price": 72
+  },
+  "15": {
+    "name": "Quattro stagioni",
+    "toppings": ["tomatosauce", "cheese", "ham", "shrimp", "moshrooms", "ground beef"],
+    "hasLunchOffer": false,
+    "price": 73
+  },
+  "16": {
+    "name": "Limfjord",
+    "toppings": ["tomatosauce", "cheese", "tuna", "moshrooms", "shrimp"],
+    "hasLunchOffer": false,
+    "price": 70
+  },
+  "17": {
+    "name": "Firat",
+    "toppings": ["tomatosauce", "cheese", "ham", "bacon", "kebab"],
+    "hasLunchOffer": true,
+    "price": 73
+  },
+  "18": {
+    "name": "Vegetar",
+    "toppings": ["tomatosauce", "cheese", "moshrooms", "onion", "corn", "paprika", "pineapple", "artichoke"],
+    "hasLunchOffer": true,
+    "price": 60
+  },
+  "18a": {
+    "name": "Vegetar 2",
+    "toppings": ["tomatosauce", "cheese", "spinach", "mozzarella", "fresh tomatoes"],
+    "hasLunchOffer": true,
+    "price": 60
+  },
+  "19": {
+    "name": "Botan",
+    "toppings": ["tomatosauce", "cheese", "ham", "kebab", "red bellpepper", "onion"],
+    "hasLunchOffer": false,
+    "price": 80
+  },
+  "20": {
+    "name": "Montana",
+    "toppings": ["tomatosauce", "cheese", "ground beef", "mushroom", "onion", "garlic"],
+    "hasLunchOffer": true,
+    "price": 60
+  },
+  "21": {
+    "name": "Roma",
+    "toppings": ["tomatosauce", "cheese", "ham", "ground beef", "onion"],
+    "hasLunchOffer": false,
+    "price": 68
+  },
+  "22": {
+    "name": "Caruso",
+    "toppings": ["tomatosauce", "cheese", "ham", "bacon", "pepperoni", "cocktail sausage"],
+    "hasLunchOffer": false,
+    "price": 75
+  },
+  "23": {
+    "name": "Kyllingepizza",
+    "toppings": ["tomatosauce", "cheese", "onion", "mushroom", "chicken", "curry", "pineapple"],
+    "hasLunchOffer": false,
+    "price": 70
+  },
+  "24": {
+    "name": "Amed",
+    "toppings": ["tomatosauce", "cheese", "kebab", "pepperoni", "onion", "ground beef", "garlic"],
+    "hasLunchOffer": false,
+    "price": 80
+  },
+  "25": {
+    "name": "Pizza",
+    "toppings": ["That you combine yourself: base tomatosauce + toppings"],
+    "hasLunchOffer": false,
+    "price": 35
+  },
+  "26": {
+    "name": "Hjallerup special",
+    "toppings": ["tomatosauce", "cheese", "mushroom", "kebab", "onion", "bacon", "egg", "chili", "garlic"],
+    "hasLunchOffer": false,
+    "price": 80
+  },
+  "27": {
+    "name": "Pepperoni",
+    "toppings": ["tomatosauce", "cheese", "mushroom", "pepperoni"],
+    "hasLunchOffer": true,
+    "price": 65
+  },
+  "28": {
+    "name": "Chaplin",
+    "toppings": ["tomatosauce", "cheese", "ground beef", "pepperoni", "cocktail sausage", "chili", "garlic"],
+    "hasLunchOffer": false,
+    "price": 73
+  },
+  "29": {
+    "name": "Alanya",
+    "toppings": ["tomatosauce", "cheese", "ham", "mushroom", "pepperoni", "bacon", "ground beef"],
+    "hasLunchOffer": false,
+    "price": 82
+  },
+  "30": {
+    "name": "Husets special",
+    "toppings": ["tomatosauce", "cheese", "ham", "mushroom", "kebab", "bacon", "cocktail sausage"],
+    "hasLunchOffer": false,
+    "price": 82
+  },
+  "31": {
+    "name": "Garlic bread",
+    "toppings": ["with cheese"],
+    "hasLunchOffer": false,
+    "price": 30
+  },
+  "32": {
+    "name": "Sicilie",
+    "toppings": ["tomatosauce", "cheese", "ham", "chicken", "bacon", "onion", "garlic"],
+    "hasLunchOffer": false,
+    "price": 80
+  },
+  "33": {
+    "name": "Simon's pizza",
+    "toppings": ["tomatosauce", "cheese", "meat sauce", "pepperoni", "pineapple", "red bellpepper"],
+    "hasLunchOffer": false,
+    "price": 68
+  },
+  "34a": {
+    "name": "Istanbul",
+    "toppings": ["tomatosauce", "cheese", "spinach", "kebab", "feta cheese", "egg"],
+    "hasLunchOffer": false,
+    "price": 68
+  },
+  "170": {
+    "name": "Rambo",
+    "toppings": ["tomatosauce", "cheese", "pepperoni", "chicken", "bearnaise sauce"],
+    "hasLunchOffer": false,
+    "price": 72
+  },
+  "171": {
+    "name": "amigo",
+    "toppings": ["tomatosauce", "cheese", "kebab", "cocktail sausage", "bearnaise sauce"],
+    "hasLunchOffer": false,
+    "price": 72
+  },
+  "172": {
+    "name": "Sucuk 1",
+    "toppings": ["tomatosauce", "cheese", "kebab", "mushroom", "sucuk (Turkish salami)", "chili"],
+    "hasLunchOffer": false,
+    "price": 79
+  },
+  "173": {
+    "name": "Sucuk 2",
+    "toppings": ["tomatosauce", "cheese", "ground beef", "onion", "sucuk (Turkish salami)", "chili"],
+    "hasLunchOffer": false,
+    "price": 79
+  }
+}

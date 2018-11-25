@@ -139,38 +139,4 @@ exports.verifyToken = verifyToken;
 /**
  * Token handler
  */
-exports.tokens = async function tokenHandler(data) {
-  const acceptableMethods = [
-    'post',
-    'get',
-    'put',
-    'delete',
-  ];
-
-  if (acceptableMethods.indexOf(data.method) > -1) {
-    try {
-      const response = await tokenMethod[data.method](data);
-
-      return response;
-    } catch (error) {
-      if (error.statusCode) {
-        return {
-          statusCode: error.statusCode,
-          payload: { Error: error.message },
-        };
-      }
-
-      console.log(`Unkown error: ${error.message}`);
-
-      return {
-        statusCode: config.statusCode.internalServerError,
-        payload: { Error: `Unkown error: ${error.message}` },
-      };
-    }
-  }
-
-  return {
-    statusCode: config.statusCode.methodNotAllowed,
-    payload: { Error: 'Method not allowed' },
-  };
-};
+exports.tokens = tokenMethod;

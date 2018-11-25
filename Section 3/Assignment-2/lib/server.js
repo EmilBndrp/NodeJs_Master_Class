@@ -61,13 +61,39 @@ server.unifiedServer = function unifiedServerObject(req, res) {
       payload: helpers.parseJsonToObject(buffer),
     };
 
-    // Choose handler this request should go to. If one is not found, use the 'not found handler'
-    const chosenHandler = typeof router[trimmedPath] !== 'undefined'
-      ? router[trimmedPath]
-      : router.notFound;
+    /**
+     * Requesthandler
+     */
+    const requestHandler = async function requestHandler(requestData) {
+      try {
+        const response = await router[requestData.trimmedPath][requestData.method](requestData);
 
-    // Route the request to the handler specified in the router
-    const responseObject = await chosenHandler(requestObject) || {};
+        return response;
+      } catch (error) {
+        if (error.statusCode) {
+          return {
+            statusCode: error.statusCode,
+            payload: { Error: error.message },
+          };
+        }
+
+        if (error.message === 'router[requestData.trimmedPath][requestData.method] is not a function') {
+          return {
+            statusCode: config.statusCode.methodNotAllowed,
+            payload: { Error: 'Method not allowed' },
+          };
+        }
+
+        console.log('Unkown error encoutered', error);
+
+        return {
+          statusCode: config.statusCode.unknownError,
+          payload: { Error: 'Unkown error' },
+        };
+      }
+    };
+
+    const responseObject = await requestHandler(requestObject);
 
     // Use the statuscode defined by the handler or default to 200
     const statusCode = typeof (responseObject.statusCode) === 'number'

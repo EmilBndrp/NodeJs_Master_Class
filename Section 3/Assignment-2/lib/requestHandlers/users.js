@@ -26,6 +26,8 @@ userMethod.post = async function createNewUser(requestData) {
     // Validate the password then hash it
     hashedPassword: await validate.password(requestData.payload.password)
       .then((validatedPassword) => helpers.hash(validatedPassword)),
+
+    cart: {},
   };
 
   // Store user on disc
@@ -55,6 +57,7 @@ userMethod.get = async function getUserInformation(requestData) {
 
   const userData = await data.read('users', email);
   delete userData.hashedPassword;
+  delete userData.cart;
 
   return {
     statusCode: config.statusCode.ok,
@@ -126,47 +129,10 @@ userMethod.delete = async function deleteUser(requestData) {
   await validate.email(email);
   await validate.token(token);
   await verifyToken(token, email);
-
   await data.delete('users', email);
+
+  return {};
 };
 
 
-/**
- * Users handle
- */
-const users = async function usersHandler(data) {
-  const acceptableMethods = [
-    'post',
-    'get',
-    'put',
-    'delete',
-  ];
-
-  if (acceptableMethods.indexOf(data.method) > -1) {
-    try {
-      const response = await userMethod[data.method](data);
-
-      return response;
-    } catch (error) {
-      if (error.statusCode) {
-        return {
-          statusCode: error.statusCode,
-          payload: { Error: error.message },
-        };
-      }
-
-      return {
-        statusCode: config.statusCode.internalServerError,
-        payload: { Error: `Unkown error: ${error.message}` },
-      };
-    }
-  }
-
-  return {
-    statusCode: config.statusCode.methodNotAllowed,
-    payload: { Error: 'Method not allowed' },
-  };
-};
-
-
-module.exports = users;
+module.exports = userMethod;

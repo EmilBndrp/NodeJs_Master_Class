@@ -15,16 +15,18 @@ const userMethod = {};
  * Optional data: none
  */
 userMethod.post = async function createNewUser(requestData) {
+  const { email, firstName, lastName, streetAddress, tosAgreement, password } = requestData.payload;
+
   // Check that all the required data are filled out correctly
   const userObject = {
-    email: await validate.email(requestData.payload.email),
-    firstName: await validate.firstName(requestData.payload.firstName),
-    lastName: await validate.lastName(requestData.payload.lastName),
-    streetAddress: await validate.streetAddress(requestData.payload.streetAddress),
-    tosAgreement: await validate.tos(requestData.payload.tosAgreement),
+    email: await validate.email(email),
+    firstName: await validate.firstName(firstName),
+    lastName: await validate.lastName(lastName),
+    streetAddress: await validate.streetAddress(streetAddress),
+    tosAgreement: await validate.tos(tosAgreement),
 
     // Validate the password then hash it
-    hashedPassword: await validate.password(requestData.payload.password)
+    hashedPassword: await validate.password(password)
       .then((validatedPassword) => helpers.hash(validatedPassword)),
 
     cart: {},
@@ -48,11 +50,11 @@ userMethod.post = async function createNewUser(requestData) {
  * dont let them access anyone elses
  */
 userMethod.get = async function getUserInformation(requestData) {
-  // Check that the email provided is valid
-  const email = await validate.email(requestData.queryStringObject.email);
-
-  // Get the token from the headers then validate and verify it
-  const token = await validate.token(requestData.headers.token);
+  // Check that all the required data are filled out
+  const { email } = requestData.queryStringObject;
+  const { token } = requestData.headers;
+  await validate.email(email);
+  await validate.token(token);
   await verifyToken(token, email);
 
   const userData = await data.read('users', email);
@@ -131,7 +133,9 @@ userMethod.delete = async function deleteUser(requestData) {
   await verifyToken(token, email);
   await data.delete('users', email);
 
-  return {};
+  return {
+    statusCode: config.statusCode.ok,
+  };
 };
 
 

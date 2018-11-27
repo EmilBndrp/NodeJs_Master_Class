@@ -1,14 +1,14 @@
 // Dependendies
 const server = require('./lib/server');
-//const workers = require('./lib/workers');
+// const workers = require('./lib/workers');
 
 // Declare the app
 const app = {};
 
-// Export the app
-module.exports = app;
 
-// Init function
+/**
+ *  Init function
+ */
 app.init = function initiation() {
   // Start the server
   server.init();
@@ -19,3 +19,6 @@ app.init = function initiation() {
 
 // Execute the app
 app.init();
+
+// Export the app
+module.exports = app;

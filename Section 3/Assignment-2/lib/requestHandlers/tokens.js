@@ -4,24 +4,6 @@ const helpers = require('../helpers');
 const config = require('../config');
 const validate = require('../validate');
 
-
-/**
- * Verify if a given token id is currently valid for a given user
- */
-const verifyToken = async function verifyValidTokenForUser(tokenId, email) {
-  // Lookup the token
-  const tokenData = await data.read('tokens', tokenId);
-  if (tokenData.email === email && tokenData.expires > Date.now()) {
-    return Promise.resolve(true);
-  }
-
-  const err = Error('Missing required token in header, or token is invalid');
-  err.statusCode = config.statusCode.forbidden;
-
-  return Promise.reject(err);
-};
-
-
 // Container for the users submethods
 const tokenMethod = {};
 
@@ -132,11 +114,26 @@ tokenMethod.delete = async function deleteToken(requestData) {
 };
 
 
-// Export verifyToken seperatly
-exports.verifyToken = verifyToken;
+/**
+ * Verify if a given token id is currently valid for a given user
+ */
+const verifyToken = async function verifyValidTokenForUser(tokenId, email) {
+  // Lookup the token
+  const tokenData = await data.read('tokens', tokenId);
+  if (tokenData.email === email && tokenData.expires > Date.now()) {
+    return Promise.resolve(true);
+  }
+
+  const err = Error('Missing required token in header, or token is invalid');
+  err.statusCode = config.statusCode.forbidden;
+
+  return Promise.reject(err);
+};
 
 
 /**
  * Token handler
+ * Export verifyToken seperatly
  */
 exports.tokens = tokenMethod;
+exports.verifyToken = verifyToken;

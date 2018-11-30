@@ -30,6 +30,7 @@ environments.staging = {
   httpPort: 3000,
   httpsPort: 3001,
   tokenLength: 20,
+  newestMenu: 'menu-21-11-2018',
 };
 
 // Production environment
@@ -40,6 +41,7 @@ environments.production = {
   httpPort: 5000,
   httpsPort: 5001,
   tokenLength: 20,
+  newestMenu: 'menu-21-11-2018',
 };
 
 // Determine which environment was passed as a command-line argument

@@ -25,7 +25,7 @@ tokenMethod.post = async function createToken(requestData) {
     const err = new Error('Password did not match the specified user\'s password');
     err.statusCode = config.statusCode.forbidden;
 
-    return err;
+    throw err;
   }
 
   // If valid create a new token with a random name. Set expiration date 1 hour in the future
@@ -74,7 +74,7 @@ tokenMethod.put = async function updateTokenExpiration(requestData) {
     const err = new Error('Missing required fields or fields are invalid');
     err.statusCode = config.statusCode.badRequest;
 
-    return err;
+    throw err;
   }
 
   const tokenData = await data.read('tokens', id);
@@ -82,7 +82,7 @@ tokenMethod.put = async function updateTokenExpiration(requestData) {
     const err = new Error('The token has already expired, and cannot be extended');
     err.statusCode = config.statusCode.badRequest;
 
-    return err;
+    throw err;
   }
 
   // Set the expirationdate to an hour from now
